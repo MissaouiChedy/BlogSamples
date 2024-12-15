@@ -1,8 +1,8 @@
-# Azure Event Hub Sending Message Sample
+# Azure Event Hub Consuming Messages Sample
 
-A sample C# console app demonstrating how send messages to an Event Hub Topic.
+A sample C# console app demonstrating how to consume messages from an Event Hub Consumer Group.
 
-This example is discussed in [Azure Event Hub Sending Messages](http://blog.techdominator.com/article/sending-messages-with-azure-event-hubs.html)
+This example is discussed in [Consuming Messages With Azure Event Hubs](http://blog.techdominator.com/article/article/consuming-messages-with-azure-event-hubs.html)
 
 ## Building and running the example
 
