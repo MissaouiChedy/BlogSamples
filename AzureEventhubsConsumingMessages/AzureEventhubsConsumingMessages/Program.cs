@@ -91,7 +91,8 @@ async Task ProcessEventHandler(ProcessEventArgs eventArgs)
  */
 Task ProcessErrorHandler(ProcessErrorEventArgs eventArgs)
 {
-    Console.WriteLine($"\tPartition '{eventArgs.PartitionId}': an unhandled exception was encountered. This was not expected to happen.");
+    Console.WriteLine(@$"\tPartition '{eventArgs.PartitionId}':
+    an unhandled exception was encountered. This was not expected to happen.");
     Console.WriteLine(eventArgs.Exception.Message);
     return Task.CompletedTask;
 }

@@ -29,7 +29,8 @@ az eventhubs eventhub create `
   --retention-time 2 `
   --partition-count 1
 
-az eventhubs eventhub consumer-group create --consumer-group-name $eventhubConsumerGroupName `
+az eventhubs eventhub consumer-group create `
+  --consumer-group-name $eventhubConsumerGroupName `
   --eventhub-name $eventhubTopicName `
   --namespace-name $eventHubNamespace `
   --resource-group $resourceGroupName
