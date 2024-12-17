@@ -2,7 +2,7 @@
 
 A sample C# console app demonstrating how to consume messages from an Event Hub Consumer Group.
 
-This example is discussed in [Consuming Messages With Azure Event Hubs](http://blog.techdominator.com/article/article/consuming-messages-with-azure-event-hubs.html)
+This example is discussed in [Consuming Messages With Azure Event Hubs](http://blog.techdominator.com/article/consuming-messages-with-azure-event-hubs.html)
 
 ## Building and running the example
 
