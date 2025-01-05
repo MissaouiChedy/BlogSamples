@@ -6,7 +6,7 @@ $eventhubConsumerGroupName= "main-consumer"
 $storageAccountName = "mainconsumerstorageacc"
 $storageContainerName = "main-consumer"
 $userEmail = "chedy.missaoui@tessan.tech"
-$partitionsCount = 2
+$partitionsCount = 3
 
 ## Create a Resource Group
 az group create `

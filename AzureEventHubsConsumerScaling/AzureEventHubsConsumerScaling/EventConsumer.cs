@@ -4,6 +4,12 @@ using System.Text.Json;
 
 namespace AzureEventHubsConsumerScaling
 {
+    /*
+     * Event Consumer is responsible for:
+     *   Starting and Stoping Events comsumption
+     *   Tracking Partition Id and TimeStamp for Each Message
+     *   Providing Processed Messages with Metadata When stopped
+     */
     public class EventConsumer
     {
         private readonly EventProcessorClient _eventProcessorClient;
@@ -39,7 +45,7 @@ namespace AzureEventHubsConsumerScaling
                 .Deserialize<Message>(readOnlySpan)!;
 
             Console.WriteLine($"Consumer {_id} received '{receivedMessage}' from partition {eventArgs.Partition.PartitionId}");
-            _receivedMessages.Add(new(eventArgs.Partition.PartitionId, receivedMessage));
+            _receivedMessages.Add(new(eventArgs.Partition.PartitionId, DateTime.UtcNow, receivedMessage));
             return eventArgs.UpdateCheckpointAsync();
         }
 
@@ -53,5 +59,5 @@ namespace AzureEventHubsConsumerScaling
     }
 
     public record Message(Guid Id, string LocationId, string Content);
-    public record MessageReceived(string PartitionId, Message Message);
+    public record MessageReceived(string PartitionId, DateTime Timestamp, Message Message);
 }
