@@ -22,7 +22,6 @@ To run the JMeter test for sending messages to the Event Hub topic, follow these
 3. Update the user-defined variables in the test plan with your Event Hub details:
     - `MessagesCount`: Number of messages to send.
     - `TopicName`: Name of your Event Hub topic.
-    - `EventHubSharedAccessPolicyName`: Your Event Hub SAS policy name.
     - `EventHubNamespace`: Your Event Hub namespace.
 4. Start the test by clicking the green **Start** button in JMeter.
 5. Monitor the test results in the **View Results Tree** and **Summary Report** listeners.

@@ -14,11 +14,6 @@
             <stringProp name="Argument.value">&lt;EVENT_HUB_TOPIC_NAME&gt;</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="EventHubSharedAccessPolicyName" elementType="Argument">
-            <stringProp name="Argument.name">EventHubSharedAccessPolicyName</stringProp>
-            <stringProp name="Argument.value">&lt;SAS_POLICY_NAME&gt;</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="EventHubNamespace" elementType="Argument">
             <stringProp name="Argument.name">EventHubNamespace</stringProp>
             <stringProp name="Argument.value">&lt;EVENTHUB_NAMESPACE&gt;.servicebus.windows.net</stringProp>
@@ -39,7 +34,7 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 1">
+        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 1" enabled="true">
           <stringProp name="namespaceName">${EventHubNamespace}</stringProp>
           <stringProp name="authType">Microsoft Entra ID credential</stringProp>
           <stringProp name="aadCredential">AzCliCredential</stringProp>
@@ -86,7 +81,7 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 2">
+        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 2" enabled="true">
           <stringProp name="namespaceName">${EventHubNamespace}</stringProp>
           <stringProp name="authType">Microsoft Entra ID credential</stringProp>
           <stringProp name="aadCredential">AzCliCredential</stringProp>
@@ -133,7 +128,7 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 3">
+        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 3" enabled="true">
           <stringProp name="namespaceName">${EventHubNamespace}</stringProp>
           <stringProp name="authType">Microsoft Entra ID credential</stringProp>
           <stringProp name="aadCredential">AzCliCredential</stringProp>
@@ -180,7 +175,7 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 4">
+        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 4" enabled="true">
           <stringProp name="namespaceName">${EventHubNamespace}</stringProp>
           <stringProp name="authType">Microsoft Entra ID credential</stringProp>
           <stringProp name="aadCredential">AzCliCredential</stringProp>
@@ -227,7 +222,7 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 5">
+        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 5" enabled="true">
           <stringProp name="namespaceName">${EventHubNamespace}</stringProp>
           <stringProp name="authType">Microsoft Entra ID credential</stringProp>
           <stringProp name="aadCredential">AzCliCredential</stringProp>
@@ -263,7 +258,7 @@
         </jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler>
         <hashTree/>
       </hashTree>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -300,7 +295,7 @@
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -337,11 +332,11 @@
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer">
+      <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
         <stringProp name="ConstantTimer.delay">250</stringProp>
       </ConstantTimer>
       <hashTree/>
-      <jp.co.pnop.jmeter.protocol.aad.config.AzAdCredential guiclass="jp.co.pnop.jmeter.protocol.aad.config.gui.AzAdCredentialGui" testclass="jp.co.pnop.jmeter.protocol.aad.config.AzAdCredential" testname="Microsoft Entra ID Credential">
+      <jp.co.pnop.jmeter.protocol.aad.config.AzAdCredential guiclass="jp.co.pnop.jmeter.protocol.aad.config.gui.AzAdCredentialGui" testclass="jp.co.pnop.jmeter.protocol.aad.config.AzAdCredential" testname="Microsoft Entra ID Credential" enabled="true">
         <stringProp name="credentialName">AzCliCredential</stringProp>
         <stringProp name="credentialType">DefaultAzureCredential</stringProp>
         <stringProp name="authorityHost">login.microsoftonline.com</stringProp>
