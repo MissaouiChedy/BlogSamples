@@ -1,12 +1,11 @@
-$resourceGroupName = "rg-test-eventhub-consume-scaling"
+$resourceGroupName = "rg-test-eventhub-checkpoint-rewind"
 $region = "eastus"
-$eventHubNamespace = "evh-test-consume-scaling"
+$eventHubNamespace = "evh-test-checkpoint-rewind"
 $eventhubTopicName = "main-topic"
 $eventhubConsumerGroupName= "main-consumer"
 $storageAccountName = "mainconsumerstorageacc"
 $storageContainerName = "main-consumer"
 $userEmail = "chedy.missaoui@<REDACTED>"
-$partitionsCount = 3
 
 ## Create a Resource Group
 az group create `
@@ -28,7 +27,7 @@ az eventhubs eventhub create `
   --resource-group $resourceGroupName `
   --cleanup-policy Delete `
   --retention-time 2 `
-  --partition-count $partitionsCount
+  --partition-count 1
 
 az eventhubs eventhub consumer-group create `
   --consumer-group-name $eventhubConsumerGroupName `
@@ -39,6 +38,7 @@ az eventhubs eventhub consumer-group create `
 az storage account create --name $storageAccountName `
   --resource-group $resourceGroupName `
   --access-tier 'Hot' `
+  --enable-hierarchical-namespace false `
   --sku "Standard_LRS" `
   --allow-blob-public-access true
 
@@ -73,3 +73,4 @@ az role assignment create `
 az role assignment create --assignee $userEmail `
   --role "Storage Blob Data Contributor" `
   --scope $storageAccountId
+
