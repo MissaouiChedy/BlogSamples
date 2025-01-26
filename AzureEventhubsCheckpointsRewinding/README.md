@@ -2,7 +2,7 @@
 
 A sample C# console app demonstrating how to checkpoint and how to rewind the event stream with Azure Event hubs .NET SDK.
 
-This example is discussed in [Azure Event Hubs Checkpoints & Rewinding](http://blog.techdominator.com/article/azure-event-hubs-checkpoints-%26-rewinding.html)
+This example is discussed in [Azure Event Hubs Checkpoints & Rewinding](http://blog.techdominator.com/article/azure-event-hubs-checkpoints-&-rewinding.html)
 
 ## Building and running the example
 

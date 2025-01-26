@@ -34,7 +34,7 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 1">
+        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 1" enabled="true">
           <stringProp name="namespaceName">${EventHubNamespace}</stringProp>
           <stringProp name="authType">Microsoft Entra ID credential</stringProp>
           <stringProp name="aadCredential">AzCliCredential</stringProp>
@@ -59,7 +59,7 @@
         </jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler>
         <hashTree/>
       </hashTree>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -133,7 +133,7 @@
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer">
+      <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
         <stringProp name="ConstantTimer.delay">2</stringProp>
       </ConstantTimer>
       <hashTree/>
