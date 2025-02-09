@@ -69,6 +69,7 @@ try
     /*
      * Read events from the partition
      */
+    Console.WriteLine("Starting event consumption, press Ctrl + C to halt...");
     await foreach (PartitionEvent partitionEvent in consumer.ReadEventsFromPartitionAsync(
         firstPartition,
         startingPosition,
@@ -77,7 +78,7 @@ try
         string readFromPartition = partitionEvent.Partition.PartitionId;
         ReadOnlyMemory<byte> eventBodyBytes = partitionEvent.Data.EventBody.ToMemory();
 
-        Console.WriteLine($"{partitionEvent.Data.SequenceNumber}: Read event of length {eventBodyBytes.Length} from {readFromPartition}");
+        Console.WriteLine($"{partitionEvent.Data.SequenceNumber}: Received event of length {eventBodyBytes.Length} from partition: {readFromPartition}");
 
         /*
          * Checkpoint with duration measurement
