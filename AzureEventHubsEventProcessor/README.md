@@ -1,8 +1,8 @@
-# Azure Event Hub Consumer Client Sample
+# Azure Event Hub Event Processor Sample
 
-A sample C# console app demonstrating how to use the `EventHubConsumerClient` to consume events from a partition.
+A sample C# console app demonstrating how to use the `EventHubProcessor` to consume events from several partitions.
 
-This example is discussed in [Azure Event Hubs Consumer Client](http://blog.techdominator.com/article/azure-event-hubs-consumer-client.html)
+This example is discussed in [Azure Event Hubs Event Processor, Yet Another Alternative](http://blog.techdominator.com/article/azure-event-hubs-event-processor,-yet-another-alternative.html)
 
 ## Building and running the example
 
@@ -10,6 +10,7 @@ To run the sample you need:
 
  - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)
  - [Azure Subscription](https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account)
+ - [Terraform](https://developer.hashicorp.com/terraform/install?product_intent=terraform)
 
 You can use the `azure-resources` terraform project to create the required resources.
 
@@ -42,12 +43,16 @@ To create the required resources using Terraform, navigate to the `azure-resourc
 
 Terraform will create the necessary Azure resources as defined in the configuration files. Ensure your Azure credentials are properly configured for authentication by executing an `az login` before running the Terraform commands.
 
-## Getting an Access Token for Redis
+## Running Redis locally
 
-To generate an access token for connecting to Redis, you can use the `Get-EntraToken.ps1` script. 
+This sample depends on a [redis](https://redis.io/) instance running locally in `127.0.0.1:6379` with the default credentials.
 
-This script simplifies the process of obtaining an Azure Active Directory (AAD) token, which is necessary for authenticating with Azure Cache for Redis.
+One simple way to run a redis instance is by using docker:
 
-By running the script, you can retrieve a token that can be used with tools like [Redis Insights](https://redis.io/insight/) to manage your Redis instance. 
+```sh
+docker run --name redis-instance -p 6379:6379 -d redis:latest
+```
 
-Ensure you have logged in to your Azure account using `az login` before executing the script.
+Otherwise, please [refer to installation instruction.](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/)
+
+You can use [Redis Insights](https://redis.io/insight/) to manage your Redis instance and visualize cache data. 
