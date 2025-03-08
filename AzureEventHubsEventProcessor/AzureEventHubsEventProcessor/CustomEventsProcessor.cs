@@ -38,14 +38,14 @@ namespace AzureEventHubsEventProcessor
             CancellationToken cancellationToken)
         {
             List<EventProcessorPartitionOwnership> ownerships = [];
-            
+
             foreach (var ownership in desiredOwnership)
             {
                 string version = Guid.NewGuid().ToString();
 
                 await _checkpointOwnershipStore
                     .SetOwnershipAsync(
-                        ownership.PartitionId, 
+                        ownership.PartitionId,
                         new Ownership(ownership.PartitionId, Identifier,
                             ownership.LastModifiedTime, version)
                     );
@@ -73,9 +73,9 @@ namespace AzureEventHubsEventProcessor
             return ownership
                 .Select(o => new EventProcessorPartitionOwnership
                 {
-                    FullyQualifiedNamespace = _checkpointOwnershipStore.EventhubNamespace,
-                    ConsumerGroup = _checkpointOwnershipStore.ConsumerGroup,
-                    EventHubName = _checkpointOwnershipStore.Eventhub,
+                    FullyQualifiedNamespace = FullyQualifiedNamespace,
+                    ConsumerGroup = ConsumerGroup,
+                    EventHubName = EventHubName,
                     OwnerIdentifier = o.OwnerId,
                     PartitionId = o.PartitionId,
                     LastModifiedTime = o.LastModifiedTime,
@@ -109,7 +109,7 @@ namespace AzureEventHubsEventProcessor
                     eventData.Offset, cancellationToken);
             }
         }
-        protected override async Task<EventProcessorCheckpoint> GetCheckpointAsync(string partitionId, 
+        protected override async Task<EventProcessorCheckpoint> GetCheckpointAsync(string partitionId,
             CancellationToken cancellationToken)
         {
             Checkpoint checkpoint = await _checkpointOwnershipStore
@@ -121,9 +121,9 @@ namespace AzureEventHubsEventProcessor
                 {
                     StartingPosition = EventPosition.FromSequenceNumber(checkpoint.SequenceNumber),
                     PartitionId = partitionId,
-                    ConsumerGroup = _checkpointOwnershipStore.ConsumerGroup,
-                    EventHubName = _checkpointOwnershipStore.Eventhub,
-                    FullyQualifiedNamespace = _checkpointOwnershipStore.EventhubNamespace,
+                    ConsumerGroup = ConsumerGroup,
+                    EventHubName = EventHubName,
+                    FullyQualifiedNamespace = FullyQualifiedNamespace,
                     ClientIdentifier = checkpoint.OwnerId
                 };
             }
@@ -132,9 +132,9 @@ namespace AzureEventHubsEventProcessor
             {
                 StartingPosition = EventPosition.Earliest,
                 PartitionId = partitionId,
-                ConsumerGroup = _checkpointOwnershipStore.ConsumerGroup,
-                EventHubName = _checkpointOwnershipStore.Eventhub,
-                FullyQualifiedNamespace = _checkpointOwnershipStore.EventhubNamespace,
+                ConsumerGroup = ConsumerGroup,
+                EventHubName = EventHubName,
+                FullyQualifiedNamespace = FullyQualifiedNamespace,
                 ClientIdentifier = checkpoint.OwnerId
             };
         }
@@ -161,9 +161,9 @@ namespace AzureEventHubsEventProcessor
                 {
                     StartingPosition = EventPosition.FromSequenceNumber(c.SequenceNumber),
                     PartitionId = c.PartitionId,
-                    ConsumerGroup = _checkpointOwnershipStore.ConsumerGroup,
-                    EventHubName = _checkpointOwnershipStore.Eventhub,
-                    FullyQualifiedNamespace = _checkpointOwnershipStore.EventhubNamespace,
+                    ConsumerGroup = ConsumerGroup,
+                    EventHubName = EventHubName,
+                    FullyQualifiedNamespace = FullyQualifiedNamespace,
                     ClientIdentifier = c.OwnerId
                 });
         }
