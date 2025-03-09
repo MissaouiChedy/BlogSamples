@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Send Messages To Event Hub Topic">
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="MessagesCount" elementType="Argument">
+            <stringProp name="Argument.name">MessagesCount</stringProp>
+            <stringProp name="Argument.value">5</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TopicName" elementType="Argument">
+            <stringProp name="Argument.name">TopicName</stringProp>
+            <stringProp name="Argument.value">main-topic</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="EventHubNamespace" elementType="Argument">
+            <stringProp name="Argument.name">EventHubNamespace</stringProp>
+            <stringProp name="Argument.value">evh-test-partition-receiver.servicebus.windows.net</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 1">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">0</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">${MessagesCount}</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 1" enabled="true">
+          <stringProp name="namespaceName">${EventHubNamespace}</stringProp>
+          <stringProp name="authType">Microsoft Entra ID credential</stringProp>
+          <stringProp name="aadCredential">AzCliCredential</stringProp>
+          <stringProp name="eventHubName">${TopicName}</stringProp>
+          <stringProp name="partitionType">Key</stringProp>
+          <stringProp name="partitionValue">1</stringProp>
+          <elementProp name="messages" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessages" guiclass="jp.co.pnop.jmeter.protocol.amqp.sampler.gui.AzAmqpMessagesPanel" testclass="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessages" testname="[res_key=Azure Event Hubs Default]">
+            <collectionProp name="Messages.messages">
+              <elementProp name="{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;1&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessage">
+                <stringProp name="Message.messageType">String</stringProp>
+                <stringProp name="Message.message">{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;1&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }</stringProp>
+                <stringProp name="Message.partitionKey"></stringProp>
+                <stringProp name="Message.messageId"></stringProp>
+                <stringProp name="Message.groupId"></stringProp>
+                <stringProp name="Message.customProperties"></stringProp>
+                <stringProp name="Message.contentType"></stringProp>
+                <stringProp name="Message.label"></stringProp>
+                <stringProp name="Message.standardProperties"></stringProp>
+              </elementProp>
+              <elementProp name="{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;2&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessage">
+                <stringProp name="Message.messageType">String</stringProp>
+                <stringProp name="Message.message">{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;2&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }</stringProp>
+                <stringProp name="Message.partitionKey"></stringProp>
+                <stringProp name="Message.messageId"></stringProp>
+                <stringProp name="Message.groupId"></stringProp>
+                <stringProp name="Message.customProperties"></stringProp>
+                <stringProp name="Message.contentType"></stringProp>
+                <stringProp name="Message.label"></stringProp>
+                <stringProp name="Message.standardProperties"></stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 2" enabled="true">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">0</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">${MessagesCount}</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 2" enabled="true">
+          <stringProp name="namespaceName">${EventHubNamespace}</stringProp>
+          <stringProp name="authType">Microsoft Entra ID credential</stringProp>
+          <stringProp name="aadCredential">AzCliCredential</stringProp>
+          <stringProp name="eventHubName">${TopicName}</stringProp>
+          <stringProp name="partitionType">Key</stringProp>
+          <stringProp name="partitionValue">2</stringProp>
+          <elementProp name="messages" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessages" guiclass="jp.co.pnop.jmeter.protocol.amqp.sampler.gui.AzAmqpMessagesPanel" testclass="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessages" testname="[res_key=Azure Event Hubs Default]">
+            <collectionProp name="Messages.messages">
+              <elementProp name="{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;3&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessage">
+                <stringProp name="Message.messageType">String</stringProp>
+                <stringProp name="Message.message">{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;3&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }</stringProp>
+                <stringProp name="Message.partitionKey"></stringProp>
+                <stringProp name="Message.messageId"></stringProp>
+                <stringProp name="Message.groupId"></stringProp>
+                <stringProp name="Message.customProperties"></stringProp>
+                <stringProp name="Message.contentType"></stringProp>
+                <stringProp name="Message.label"></stringProp>
+                <stringProp name="Message.standardProperties"></stringProp>
+              </elementProp>
+              <elementProp name="{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;4&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessage">
+                <stringProp name="Message.messageType">String</stringProp>
+                <stringProp name="Message.message">{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;4&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }</stringProp>
+                <stringProp name="Message.partitionKey"></stringProp>
+                <stringProp name="Message.messageId"></stringProp>
+                <stringProp name="Message.groupId"></stringProp>
+                <stringProp name="Message.customProperties"></stringProp>
+                <stringProp name="Message.contentType"></stringProp>
+                <stringProp name="Message.label"></stringProp>
+                <stringProp name="Message.standardProperties"></stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 3" enabled="true">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">0</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">${MessagesCount}</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 3" enabled="true">
+          <stringProp name="namespaceName">${EventHubNamespace}</stringProp>
+          <stringProp name="authType">Microsoft Entra ID credential</stringProp>
+          <stringProp name="aadCredential">AzCliCredential</stringProp>
+          <stringProp name="eventHubName">${TopicName}</stringProp>
+          <stringProp name="partitionType">Key</stringProp>
+          <stringProp name="partitionValue">3</stringProp>
+          <elementProp name="messages" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessages" guiclass="jp.co.pnop.jmeter.protocol.amqp.sampler.gui.AzAmqpMessagesPanel" testclass="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessages" testname="[res_key=Azure Event Hubs Default]">
+            <collectionProp name="Messages.messages">
+              <elementProp name="{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;5&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessage">
+                <stringProp name="Message.messageType">String</stringProp>
+                <stringProp name="Message.message">{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;5&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }</stringProp>
+                <stringProp name="Message.partitionKey"></stringProp>
+                <stringProp name="Message.messageId"></stringProp>
+                <stringProp name="Message.groupId"></stringProp>
+                <stringProp name="Message.customProperties"></stringProp>
+                <stringProp name="Message.contentType"></stringProp>
+                <stringProp name="Message.label"></stringProp>
+                <stringProp name="Message.standardProperties"></stringProp>
+              </elementProp>
+              <elementProp name="{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;6&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessage">
+                <stringProp name="Message.messageType">String</stringProp>
+                <stringProp name="Message.message">{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;6&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }</stringProp>
+                <stringProp name="Message.partitionKey"></stringProp>
+                <stringProp name="Message.messageId"></stringProp>
+                <stringProp name="Message.groupId"></stringProp>
+                <stringProp name="Message.customProperties"></stringProp>
+                <stringProp name="Message.contentType"></stringProp>
+                <stringProp name="Message.label"></stringProp>
+                <stringProp name="Message.standardProperties"></stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 4" enabled="true">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">0</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">${MessagesCount}</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 4" enabled="true">
+          <stringProp name="namespaceName">${EventHubNamespace}</stringProp>
+          <stringProp name="authType">Microsoft Entra ID credential</stringProp>
+          <stringProp name="aadCredential">AzCliCredential</stringProp>
+          <stringProp name="eventHubName">${TopicName}</stringProp>
+          <stringProp name="partitionType">Key</stringProp>
+          <stringProp name="partitionValue">4</stringProp>
+          <elementProp name="messages" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessages" guiclass="jp.co.pnop.jmeter.protocol.amqp.sampler.gui.AzAmqpMessagesPanel" testclass="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessages" testname="[res_key=Azure Event Hubs Default]">
+            <collectionProp name="Messages.messages">
+              <elementProp name="{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;7&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessage">
+                <stringProp name="Message.messageType">String</stringProp>
+                <stringProp name="Message.message">{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;7&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }</stringProp>
+                <stringProp name="Message.partitionKey"></stringProp>
+                <stringProp name="Message.messageId"></stringProp>
+                <stringProp name="Message.groupId"></stringProp>
+                <stringProp name="Message.customProperties"></stringProp>
+                <stringProp name="Message.contentType"></stringProp>
+                <stringProp name="Message.label"></stringProp>
+                <stringProp name="Message.standardProperties"></stringProp>
+              </elementProp>
+              <elementProp name="{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;8&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessage">
+                <stringProp name="Message.messageType">String</stringProp>
+                <stringProp name="Message.message">{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;8&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }</stringProp>
+                <stringProp name="Message.partitionKey"></stringProp>
+                <stringProp name="Message.messageId"></stringProp>
+                <stringProp name="Message.groupId"></stringProp>
+                <stringProp name="Message.customProperties"></stringProp>
+                <stringProp name="Message.contentType"></stringProp>
+                <stringProp name="Message.label"></stringProp>
+                <stringProp name="Message.standardProperties"></stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 5" enabled="true">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">0</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">${MessagesCount}</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler guiclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.gui.AzEventHubsSamplerGui" testclass="jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler" testname="Azure Event Hubs Sampler 5" enabled="true">
+          <stringProp name="namespaceName">${EventHubNamespace}</stringProp>
+          <stringProp name="authType">Microsoft Entra ID credential</stringProp>
+          <stringProp name="aadCredential">AzCliCredential</stringProp>
+          <stringProp name="eventHubName">${TopicName}</stringProp>
+          <stringProp name="partitionType">Key</stringProp>
+          <stringProp name="partitionValue">5</stringProp>
+          <elementProp name="messages" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessages" guiclass="jp.co.pnop.jmeter.protocol.amqp.sampler.gui.AzAmqpMessagesPanel" testclass="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessages" testname="[res_key=Azure Event Hubs Default]">
+            <collectionProp name="Messages.messages">
+              <elementProp name="{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;9&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessage">
+                <stringProp name="Message.messageType">String</stringProp>
+                <stringProp name="Message.message">{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;9&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }</stringProp>
+                <stringProp name="Message.partitionKey"></stringProp>
+                <stringProp name="Message.messageId"></stringProp>
+                <stringProp name="Message.groupId"></stringProp>
+                <stringProp name="Message.customProperties"></stringProp>
+                <stringProp name="Message.contentType"></stringProp>
+                <stringProp name="Message.label"></stringProp>
+                <stringProp name="Message.standardProperties"></stringProp>
+              </elementProp>
+              <elementProp name="{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;10&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }" elementType="jp.co.pnop.jmeter.protocol.amqp.sampler.AzAmqpMessage">
+                <stringProp name="Message.messageType">String</stringProp>
+                <stringProp name="Message.message">{     &quot;Id&quot;: &quot;${__UUID}&quot;, &quot;LocationId&quot;: &quot;10&quot;,     &quot;Content&quot;: &quot;KABLAM&quot; }</stringProp>
+                <stringProp name="Message.partitionKey"></stringProp>
+                <stringProp name="Message.messageId"></stringProp>
+                <stringProp name="Message.groupId"></stringProp>
+                <stringProp name="Message.customProperties"></stringProp>
+                <stringProp name="Message.contentType"></stringProp>
+                <stringProp name="Message.label"></stringProp>
+                <stringProp name="Message.standardProperties"></stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+        <stringProp name="ConstantTimer.delay">250</stringProp>
+      </ConstantTimer>
+      <hashTree/>
+      <jp.co.pnop.jmeter.protocol.aad.config.AzAdCredential guiclass="jp.co.pnop.jmeter.protocol.aad.config.gui.AzAdCredentialGui" testclass="jp.co.pnop.jmeter.protocol.aad.config.AzAdCredential" testname="Microsoft Entra ID Credential" enabled="true">
+        <stringProp name="credentialName">AzCliCredential</stringProp>
+        <stringProp name="credentialType">DefaultAzureCredential</stringProp>
+        <stringProp name="authorityHost">login.microsoftonline.com</stringProp>
+        <stringProp name="tenantId"></stringProp>
+        <stringProp name="clientId"></stringProp>
+        <stringProp name="clientSecret"></stringProp>
+        <stringProp name="filetype"></stringProp>
+        <stringProp name="filename"></stringProp>
+        <stringProp name="filePassword"></stringProp>
+        <stringProp name="managedIdentityClientId"></stringProp>
+        <stringProp name="workloadIdentityClientId"></stringProp>
+        <stringProp name="intelliJKeePassDatabasePath"></stringProp>
+        <stringProp name="additionallyAllowedTenants"></stringProp>
+        <stringProp name="username"></stringProp>
+        <stringProp name="password"></stringProp>
+        <stringProp name="redirectUrl"></stringProp>
+      </jp.co.pnop.jmeter.protocol.aad.config.AzAdCredential>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
