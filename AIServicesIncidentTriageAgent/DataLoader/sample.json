@@ -1,0 +1,50 @@
+[
+  {
+    "Id": "c5c8fdd4-872f-4d18-835a-23d110db2775",
+    "Title": "MELTCORE 6 Login Timeout Issue",
+    "Issue": "Users are unable to log in to MELTCORE 6. The login screen loads but after entering credentials, the page times out.",
+    "Solution": "Restart the MELTCORE Authentication Service and clear server-sIde session cache. Ensure the LDAP/Active Directory connection is active.",
+    "Discussion": "This issue is commonly caused by expired authentication tokens or a stalled session handler. It occurs more frequently after a server patch or network outage. If the LDAP server is reachable, restarting the authentication microservice resolves the issue without requiring user password resets.",
+    "Category": "Software"
+  },
+  {
+    "Id": "e2b7c6e1-7c3a-4e2a-9b1a-2f8e4a1c9d3a",
+    "Title": "Inventory Module Not Updating Stock Levels",
+    "Issue": "Stock quantities remain unchanged after completing purchase orders in the Inventory module.",
+    "Solution": "Trigger manual synchronization from the 'System Maintenance → Sync Inventory Data' menu, then restart the Inventory Processing Service.",
+    "Discussion": "The issue is usually caused by a stuck background job (StockUpdateWorker) that processes completed purchase orders. When the worker queue is overloaded or fails, synchronization stops. A restart and manual sync ensures pending data is processed.",
+    "Category": "Software"
+  },
+  {
+    "Id": "a1f4b8c2-5e6d-4c3b-8f2a-7d9e1b2c3f4a",
+    "Title": "Slow Performance on Sales Dashboard",
+    "Issue": "Sales dashboard takes more than 2 minutes to load and sometimes fails with a 'Request Timeout' error.",
+    "Solution": "Run database index optimization on the 'sales_transactions' table and purge logs older than 6 months using the Cleanup Utility.",
+    "Discussion": "Performance degradation is typically linked to large data volumes and fragmented indexes. Purging old data and reindexing significantly improves response time. In high-traffic periods, enabling dashboard cache in the system settings also helps.",
+    "Category": "Software"
+  },
+  {
+    "Id": "b3c2d1e4-8f7a-4b2c-9e1a-6d5c4b3a2f1e",
+    "Title": "MELTCORE 6 Fails to Generate PDF Invoices",
+    "Issue": "When generating invoices as PDF, the system returns 'Document Rendering Error: Template Missing'.",
+    "Solution": "Re-upload the default invoice template under Admin → Document Templates and restart the PDF Rendering Service.",
+    "Discussion": "This usually happens when the template file is accIdentally removed or corrupted during deployment. The rendering engine depends on a preloaded .rpt template. A missing template prevents PDF generation entirely.",
+    "Category": "Software"
+  },
+  {
+    "Id": "c4d3e2f1-9b8a-4c2d-8e1a-7f6c5b4a3d2e",
+    "Title": "Purchase Order Approval Workflow Stuck in Pending State",
+    "Issue": "Submitted purchase orders remain in 'Pending Approval' even after managers approve them.",
+    "Solution": "Restart the Workflow Engine service and clear the 'pending_approvals' queue from the Workflow Admin Panel.",
+    "Discussion": "The approval status is stored in a workflow queue. If the workflow engine crashes or a process within it hangs, approvals are not propagated to the database. Clearing the queue and restarting the engine reprocesses the approvals.",
+    "Category": "Software"
+  },
+  {
+    "Id": "d5e4f3a2-1b9c-4e2d-8f1a-6c5b4a3d2e1f",
+    "Title": "Incorrect Financial Report Totals",
+    "Issue": "Monthly financial reports show incorrect totals due to missing journal entries from certain departments.",
+    "Solution": "Run 'Recalculate Ledger' from Finance Tools, verify department posting rules, and ensure all journal batches are closed before report generation.",
+    "Discussion": "Reports pull data only from closed journal batches. If departments submit journals but do not finalize them, the report excludes those entries. Recalculation forces MELTCORE 6 to rebuild financial aggregates from journal data.",
+    "Category": "Software"
+  }
+]
