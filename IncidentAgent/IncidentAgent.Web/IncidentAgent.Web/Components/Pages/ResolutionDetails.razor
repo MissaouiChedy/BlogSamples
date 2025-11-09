@@ -1,0 +1,66 @@
+﻿@page "/resolution/{TicketId}"
+@using IncidentAgent.Models
+@using IncidentAgent.Web.Components.Shared
+@inject IResolutionService ResolutionService
+
+<h3>Resolution Details</h3>
+
+@if (isLoading)
+{
+    <div class="text-center my-4">
+        <span class="spinner-border" role="status"></span>
+        <span class="ms-2">Loading resolution...</span>
+    </div>
+}
+else if (resolution == null)
+{
+    <div class="alert alert-warning">No resolution found for this ticket.</div>
+}
+else
+{
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Resolution for Ticket: <span class="text-light">@resolution.TicketId</span></h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <strong>Status:</strong> <span class="badge bg-info">@resolution.Status</span>
+            </div>
+            <div class="mb-3">
+                <strong>Created At:</strong> @resolution.CreatedAt.ToString("g")
+            </div>
+            <div class="mb-3">
+                <strong>Steps:</strong>
+                @if (resolution.Steps != null && resolution.Steps.Length > 0)
+                {
+                    <ol>
+                        @foreach (var step in resolution.Steps)
+                        {
+                            <li>@step</li>
+                        }
+                    </ol>
+                }
+                else
+                {
+                    <span class="text-muted">No steps available.</span>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? TicketId { get; set; }
+    private Resolution? resolution;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(TicketId))
+        {
+            resolution = await ResolutionService.GetResolutionByTicketIdAsync(TicketId);
+        }
+        isLoading = false;
+    }
+}

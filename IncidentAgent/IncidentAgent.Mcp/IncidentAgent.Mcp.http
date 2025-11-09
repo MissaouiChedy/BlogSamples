@@ -1,0 +1,6 @@
+@KB.MCPServer_HostAddress = http://localhost:5081
+
+GET {{KB.MCPServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
