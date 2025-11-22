@@ -32,7 +32,7 @@ The `SendMessagesToEventHubTopic.jmx` JMeter test sends a configurable count of 
 
 The Console Application connects to the `main-topic` Event Hub for Consumption, partitions are assigned between the consumers for optimal consumption.
 
-A user's principal is assigned the following roles to allow running the sample without using secrets:
+A user's principal is assigned the following roles to allow running the sample without using secrets and by using Entra ID Authentication:
 - Azure Event Hubs Data Sender on the `main-topic`
 - Azure Event Hubs Data Receiver on the `main-topic`
 - Storage Blob Data Contributor on the checkpoint store
@@ -53,6 +53,7 @@ The `azure-resources.ps1` powershell script can be used to create the required a
 1. Open a Powershell prompt and `cd AzureEventHubsConsumerScaling`
 1. Set the `$userEmail` variable with your azure identity's e-mail
 ![E-mail Update](./doc-images/E-mail-update.png)
+1. Adjust the `main-topic` partition count as desired with the `$partitionsCount` variable
 1. Run `az login` to login to the azure subscription
 1. Run `./azure-resources.ps1` to create the resources
 
@@ -65,7 +66,7 @@ The `azure-resources.ps1` powershell script can be used to create the required a
 ![JMeter Test Parameters](./doc-images/JMeterTestParameters.png)
 
 ### 3. Setup Console Application
-Under `AzureEventHubsConsumerScaling\Program.cs`, you can configure the consumers count with the `consumersCount` variable:
+Under `AzureEventHubsConsumerScaling/Program.cs`, you can configure the consumers count with the `consumersCount` variable:
 ![Consumers Count](./doc-images/ConsumerCountVariable.png)
 
 ### 4. Run The Sample
