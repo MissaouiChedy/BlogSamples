@@ -6,17 +6,17 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="MessagesCount" elementType="Argument">
             <stringProp name="Argument.name">MessagesCount</stringProp>
-            <stringProp name="Argument.value">20</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TopicName" elementType="Argument">
             <stringProp name="Argument.name">TopicName</stringProp>
-            <stringProp name="Argument.value">&lt;EVENT_HUB_TOPIC_NAME&gt;</stringProp>
+            <stringProp name="Argument.value">main-topic</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="EventHubNamespace" elementType="Argument">
             <stringProp name="Argument.name">EventHubNamespace</stringProp>
-            <stringProp name="Argument.value">&lt;EVENTHUB_NAMESPACE&gt;.servicebus.windows.net</stringProp>
+            <stringProp name="Argument.value">evh-test-consume-scaling.servicebus.windows.net</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>

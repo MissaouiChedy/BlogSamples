@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 /*
  * Consumer Count is set in the consumersCount variable 
  */
-int consumersCount = 8;
+int consumersCount = 3;
 
 /*
  * Create Consumers dynamically using the EventConsumer Class
