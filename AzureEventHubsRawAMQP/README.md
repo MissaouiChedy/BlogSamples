@@ -38,3 +38,6 @@ These policies determine the level of access (e.g., send, listen, or manage) gra
 It is recommended to use forms of authentication that does not require providing explicit secrets which **SAS policies are not.**
 
 Learn more about SAS Keys in the [official documentation.](https://learn.microsoft.com/en-us/azure/event-hubs/authenticate-shared-access-signature)
+## Contributing
+
+Please checkout [the contribution guidelines](../CONTRIBUTING.md) for contributing.

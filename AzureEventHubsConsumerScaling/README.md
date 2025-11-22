@@ -27,3 +27,6 @@ To run the JMeter test for sending messages to the Event Hub topic, follow these
 5. Monitor the test results in the **View Results Tree** and **Summary Report** listeners.
 
 Ensure that your Azure credentials are properly configured for authentication by executing an `az login`
+## Contributing
+
+Please checkout [the contribution guidelines](../CONTRIBUTING.md) for contributing.

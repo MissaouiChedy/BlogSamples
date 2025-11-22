@@ -56,3 +56,7 @@ docker run --name redis-instance -p 6379:6379 -d redis:latest
 Otherwise, please [refer to installation instruction.](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/)
 
 You can use [Redis Insights](https://redis.io/insight/) to manage your Redis instance and visualize cache data. 
+
+## Contributing
+
+Please checkout [the contribution guidelines](../CONTRIBUTING.md) for contributing.

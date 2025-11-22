@@ -39,3 +39,6 @@ The `Invoke-MainFunction.ps1` powershell script can be used to call the Azure fu
 
 The functions's url can be acquired in the Azure portal:
 ![Function Url](FunctionUrl.png)
+## Contributing
+
+Please checkout [the contribution guidelines](../CONTRIBUTING.md) for contributing.

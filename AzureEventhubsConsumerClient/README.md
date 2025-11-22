@@ -51,3 +51,7 @@ This script simplifies the process of obtaining an Azure Active Directory (AAD) 
 By running the script, you can retrieve a token that can be used with tools like [Redis Insights](https://redis.io/insight/) to manage your Redis instance. 
 
 Ensure you have logged in to your Azure account using `az login` before executing the script.
+
+## Contributing
+
+Please checkout [the contribution guidelines](../CONTRIBUTING.md) for contributing.

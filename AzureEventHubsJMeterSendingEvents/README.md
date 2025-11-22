@@ -65,3 +65,7 @@ The `Id` field is a unique identifier generated for each message.
 ## Notes
 
 For more information on configuring and running JMeter tests, refer to the [JMeter documentation](https://jmeter.apache.org/usermanual/index.html).
+
+## Contributing
+
+Please checkout [the contribution guidelines](../CONTRIBUTING.md) for contributing. 

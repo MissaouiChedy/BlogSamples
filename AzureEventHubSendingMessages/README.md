@@ -12,3 +12,6 @@ To run the sample you need:
  - [Azure Subscription](https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account)
 
 You can use the `azure-resources.ps1` script to create the required resources.
+## Contributing
+
+Please checkout [the contribution guidelines](../CONTRIBUTING.md) for contributing.

@@ -61,3 +61,7 @@ When working on a solution with multiple projects in Visual Studio, you need to 
    - **Select 'Set as Startup Project'**: From the context menu, select `Set as Startup Project`.
 
 4. **Verify the Startup Project**: The project name should now appear in bold in the Solution Explorer, indicating that it is the startup project.
+
+## Contributing
+
+Please checkout [the contribution guidelines](../CONTRIBUTING.md) for contributing.
