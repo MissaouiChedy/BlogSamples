@@ -13,7 +13,7 @@ var redisConnectionLog = new StringWriter();
 //    .Parse($"127.0.0.1:6379");
 
 var configurationOptions = ConfigurationOptions
-    .Parse($"rds-test-consumer-client.redis.cache.windows.net:6380");
+    .Parse($"rds-test-consumer-client.eastus.redis.azure.net:10000");
 
 await configurationOptions
     .ConfigureForAzureWithTokenCredentialAsync(new DefaultAzureCredential());
@@ -42,7 +42,7 @@ Console.CancelKeyPress += (sender, e) =>
 {
     cancellationSource.Cancel();
     Console.WriteLine("\nCtrl+C pressed. Exiting gracefully...");
-    e.Cancel = true; // Prevents immediate app termination
+    e.Cancel = true;
 };
 
 try

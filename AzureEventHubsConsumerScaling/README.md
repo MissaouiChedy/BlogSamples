@@ -26,6 +26,7 @@ This example is discussed in [Scaling Azure Event Hubs Event Consumption](http:/
 ## Setup Overview
 
 The following diagram depicts the sample's setup:
+
 ![Sample Overview](./doc-images/AzureEventHubsConsumerScaling.Overview.png)
 
 The `SendMessagesToEventHubTopic.jmx` JMeter test sends a configurable count of messages to the `main-topic` Event Hub.
