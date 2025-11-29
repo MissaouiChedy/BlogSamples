@@ -45,7 +45,7 @@ The Console Application connects to the `main-topic` Event Hub for Consumption, 
 A user's principal is assigned the following roles to allow running the sample without using secrets and by using Entra ID Authentication:
 - Azure Event Hubs Data Sender on the `main-topic`
 - Azure Event Hubs Data Receiver on the `main-topic`
-- Storage Blob Data Contributor on the checkpoint store
+- Redis Data User on the redis instance
 
 ## Console App Overview
 
