@@ -27,15 +27,3 @@ resource "azurerm_eventhub_consumer_group" "main_eventhub_consumer_group" {
   eventhub_name       = azurerm_eventhub.main_eventhub_topic.name
   resource_group_name = azurerm_resource_group.main_resource_group.name
 }
-
-resource "azurerm_role_assignment" "evh_role_assignment_data_sender" {
-  scope                = azurerm_eventhub.main_eventhub_topic.id
-  role_definition_name = "Azure Event Hubs Data Sender"
-  principal_id         = var.userPrincipalId
-}
-
-resource "azurerm_role_assignment" "evh_role_assignment_data_receiver" {
-  scope                = azurerm_eventhub.main_eventhub_topic.id
-  role_definition_name = "Azure Event Hubs Data Receiver"
-  principal_id         = var.userPrincipalId
-}
