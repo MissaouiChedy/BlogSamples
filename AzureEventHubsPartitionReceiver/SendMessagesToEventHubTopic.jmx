@@ -6,7 +6,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="MessagesCount" elementType="Argument">
             <stringProp name="Argument.name">MessagesCount</stringProp>
-            <stringProp name="Argument.value">5</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TopicName" elementType="Argument">
@@ -70,7 +70,7 @@
         </jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 2" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 2">
         <intProp name="ThreadGroup.num_threads">1</intProp>
         <intProp name="ThreadGroup.ramp_time">0</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -117,7 +117,7 @@
         </jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 3" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 3">
         <intProp name="ThreadGroup.num_threads">1</intProp>
         <intProp name="ThreadGroup.ramp_time">0</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -164,7 +164,7 @@
         </jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 4" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 4">
         <intProp name="ThreadGroup.num_threads">1</intProp>
         <intProp name="ThreadGroup.ramp_time">0</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -211,7 +211,7 @@
         </jp.co.pnop.jmeter.protocol.azureeventhubs.sampler.AzEventHubsSampler>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 5" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group 5">
         <intProp name="ThreadGroup.num_threads">1</intProp>
         <intProp name="ThreadGroup.ramp_time">0</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -295,7 +295,7 @@
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -332,11 +332,11 @@
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+      <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer">
         <stringProp name="ConstantTimer.delay">250</stringProp>
       </ConstantTimer>
       <hashTree/>
-      <jp.co.pnop.jmeter.protocol.aad.config.AzAdCredential guiclass="jp.co.pnop.jmeter.protocol.aad.config.gui.AzAdCredentialGui" testclass="jp.co.pnop.jmeter.protocol.aad.config.AzAdCredential" testname="Microsoft Entra ID Credential" enabled="true">
+      <jp.co.pnop.jmeter.protocol.aad.config.AzAdCredential guiclass="jp.co.pnop.jmeter.protocol.aad.config.gui.AzAdCredentialGui" testclass="jp.co.pnop.jmeter.protocol.aad.config.AzAdCredential" testname="Microsoft Entra ID Credential">
         <stringProp name="credentialName">AzCliCredential</stringProp>
         <stringProp name="credentialType">DefaultAzureCredential</stringProp>
         <stringProp name="authorityHost">login.microsoftonline.com</stringProp>

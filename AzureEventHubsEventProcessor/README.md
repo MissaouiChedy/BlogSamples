@@ -43,7 +43,7 @@ docker run --name redis-instance -p 6379:6379 -d redis:latest
 
 The following diagram shows the sample's setup:
 
-![Sample Overview Consumer Client](doc-images/EventProcessorOverview.png)
+![Sample Overview Event Processor](doc-images/EventProcessorOverview.png)
 
 The `SendMessagesToEventHubTopic.jmx` JMeter test sends a configurable count of messages to the `main-topic` Event Hub.
 

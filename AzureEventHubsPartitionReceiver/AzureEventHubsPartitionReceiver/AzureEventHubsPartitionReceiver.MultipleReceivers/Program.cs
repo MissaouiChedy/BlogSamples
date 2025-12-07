@@ -31,9 +31,9 @@ var latestReceiver = new PartitionReceiver(
  * receiving from range of events in the event stream
  */
 var rangeReceiver = new PartitionReceiver(
-   consumerGroup,
+    consumerGroup,
     firstParition,
-    EventPosition.FromSequenceNumber(500), // starting position
+    EventPosition.FromSequenceNumber(5), // starting position
     eventhubNamespace,
     eventhubName,
     new DefaultAzureCredential(),
@@ -64,7 +64,7 @@ Task[] tasks = [
     Task.Factory.StartNew(() => ReceiveWithLimitAsync(
         rangeReceiver,
         cancellationSource,
-        countLimit: 50)
+        countLimit: 5)
     .Wait()),
 ];
 
