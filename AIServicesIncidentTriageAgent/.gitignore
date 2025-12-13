@@ -400,3 +400,5 @@ FodyWeavers.xsd
 dist
 dist/*
 dist/**/*
+
+!**/wwwroot/lib/**/dist
