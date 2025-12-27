@@ -16,7 +16,7 @@ builder
 builder.Services.AddApplicationInsightsTelemetryWorkerService();
 
 var blobServiceClient = new BlobServiceClient(
-    new Uri($"https://{MainLatencyMeasurementFunction.StorageAccountName}"),
+    new Uri(MainLatencyMeasurementFunction.StorageAccountUrl),
     mainIdentity);
 
 builder
@@ -24,7 +24,7 @@ builder
     .AddSingleton(blobServiceClient);
 
 var configurationOptions = ConfigurationOptions
-    .Parse($"{MainLatencyMeasurementFunction.RedisCacheName}:6380");
+    .Parse(MainLatencyMeasurementFunction.RedisCacheUrl);
 
 configurationOptions = await configurationOptions
     .ConfigureForAzureWithTokenCredentialAsync(mainIdentity);
@@ -33,4 +33,6 @@ configurationOptions.AbortOnConnectFail = false;
 
 builder.Services.AddSingleton((provider) => configurationOptions);
 
-builder.Build().Run();
+await builder
+        .Build()
+        .RunAsync();
