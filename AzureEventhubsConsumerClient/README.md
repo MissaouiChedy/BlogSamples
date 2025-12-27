@@ -107,7 +107,6 @@ Once configured you can inspect and change key/values available in the redis cac
 
 ![Redis Insights Key Value](./doc-images/RedisInsightsKeyValue.png)
 
-
 ### 4. Setup Console Application
 The `AzureEventhubsConsumerClient/Program.cs` is setup by default with resource properties as created by the terraform code under `azure-resources`.
 

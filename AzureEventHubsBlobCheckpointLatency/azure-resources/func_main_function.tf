@@ -15,6 +15,8 @@ resource "azurerm_windows_function_app" "main_azure_function_app" {
     APPLICATIONINSIGHTS_CONNECTION_STRING  = azurerm_application_insights.main_application_insights.connection_string
     AZURE_TENANT_ID                        = azurerm_user_assigned_identity.main_func_identity.tenant_id
     AZURE_CLIENT_ID                        = azurerm_user_assigned_identity.main_func_identity.client_id
+    REDIS_URL                              = "${azurerm_managed_redis.main_redis_cache.hostname}:${azurerm_managed_redis.main_redis_cache.default_database[0].port}"
+    STORAGE_ACCOUNT_URL                    = azurerm_storage_account.main_storage_account.primary_blob_endpoint
   }
 
   builtin_logging_enabled                  = true
@@ -42,7 +44,7 @@ resource "azurerm_windows_function_app" "main_azure_function_app" {
     }
 
     application_stack {
-      dotnet_version              = "v8.0"
+      dotnet_version              = "v10.0"
       use_dotnet_isolated_runtime = true
     }
   }

@@ -1,6 +1,5 @@
 param (
-    [Parameter(Mandatory=$true)]
-    [string]$FunctionUrl,
+    [string]$FunctionUrl="https://mainfuncapplatencyb74b.azurewebsites.net/api/MainLatencyMeasurementFunction?code=<REDACTED>",
     $CallsCount = 100
 )
 1..$CallsCount `

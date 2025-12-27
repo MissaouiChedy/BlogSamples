@@ -11,8 +11,11 @@ namespace AzureEventHubsBlobCheckpointLatency
 {
     public class MainLatencyMeasurementFunction
     {
-        public static readonly string StorageAccountName = "samainacclatencytestfc4a.blob.core.windows.net";
-        public static readonly string RedisCacheName = "rds-latency-cache-store.redis.cache.windows.net";
+        public static readonly string StorageAccountUrl = Environment.GetEnvironmentVariable("STORAGE_ACCOUNT_URL")
+                ?? "samainacclatencytestfc4a.blob.core.windows.net";
+
+        public static readonly string RedisCacheUrl = Environment.GetEnvironmentVariable("REDIS_URL")
+                ?? "rds-latency-cache-store.westeurope.redis.azure.net:10000";
 
         private readonly TelemetryClient _telemetryClient;
         private readonly ConfigurationOptions _redisConfig;
@@ -43,7 +46,7 @@ namespace AzureEventHubsBlobCheckpointLatency
             {
                 Name = "Azure Blob Storage",
                 Type = "Azure Blob",
-                Target = StorageAccountName,
+                Target = StorageAccountUrl,
                 Data = $"checkpoint/0"
             };
 
@@ -64,12 +67,12 @@ namespace AzureEventHubsBlobCheckpointLatency
             {
                 Name = "Redis Cache",
                 Type = "Redis",
-                Target = RedisCacheName,
+                Target = RedisCacheUrl,
                 Data = "last-touched"
             };
 
             await CallWithDependencyTracking(() =>
-            { 
+            {
                 return cache.StringSetAsync("last-touched", DateTime.UtcNow.ToString());
             }, redisDependencyTelemetry);
 
