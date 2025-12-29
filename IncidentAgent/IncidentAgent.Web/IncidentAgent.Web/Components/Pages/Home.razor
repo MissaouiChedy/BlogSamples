@@ -1,0 +1,213 @@
+﻿@page "/"
+@using IncidentAgent.Web.Components.Shared
+@using IncidentAgent.Models
+@inject ITicketService TicketService
+@inject IAzureOpenAIService OpenAIService
+
+<PageTitle>Ticket Management</PageTitle>
+
+<div class="container">
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-10">
+            <h1 class="display-4 mb-4">AI-Powered Ticket Creation</h1>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @errorMessage
+                    <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+                </div>
+            }
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Describe Your Issue</h5>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="promptModel" OnValidSubmit="GenerateTicket" FormName="promptForm">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Issue Description</label>
+                            <InputTextArea class="form-control"
+                                           @bind-Value="promptModel.Description"
+                                           rows="4"
+                                           placeholder="Please describe your issue in detail..."
+                                           disabled="@isGenerating" />
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary" disabled="@isGenerating">
+                                @if (isGenerating)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    <span>Generating Ticket...</span>
+                                }
+                                else
+                                {
+                                    <span>Generate Ticket</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <EditForm Model="generatedTicket" OnValidSubmit="SaveTicket" FormName="ticketPreviewForm">
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-10">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Generated Ticket Preview</h5>
+                        <button class="btn btn-sm btn-outline-light" type="submit">
+                            Save Ticket
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Title</label>
+                            <InputText class="form-control" rows="4" @bind-Value="generatedTicket.Title" />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Category</label>
+                            <InputText class="form-control" rows="4" @bind-Value="generatedTicket.Category" />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Description</label>
+                            <InputTextArea class="form-control" rows="4" @bind-Value="generatedTicket.Description" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Existing Tickets</h5>
+                </div>
+                <div class="card-body">
+                    @if (!tickets.Any())
+                    {
+                        <div class="text-center py-4">
+                            <p class="text-muted mb-0">No tickets found. Create your first ticket above!</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ticket in tickets.OrderByDescending(t => t.Id))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a href="@($"/resolution/{ticket.Id}")" class="link-primary">@ticket.Title</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary">@ticket.Category</span>
+                                            </td>
+                                            <td>@ticket.Description</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Ticket> tickets = new();
+    [SupplyParameterFromForm(FormName = "promptForm")]
+    private PromptModel promptModel { get; set; } = new();
+    private bool isGenerating;
+    private bool showPreview = false;
+    [SupplyParameterFromForm(FormName = "ticketPreviewForm")]
+    private Ticket generatedTicket { get; set; } = new();
+    private string? errorMessage;
+
+    private class PromptModel
+    {
+        public string Description { get; set; } = string.Empty;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTickets();
+    }
+
+    private async Task LoadTickets()
+    {
+        try
+        {
+            tickets = (await TicketService.GetAllTicketsAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading tickets: {ex.Message}";
+        }
+    }
+
+    private async Task GenerateTicket()
+    {
+        if (string.IsNullOrWhiteSpace(promptModel.Description))
+            return;
+
+        try
+        {
+            errorMessage = null;
+            isGenerating = true;
+            generatedTicket = await OpenAIService.GenerateTicketFromDescriptionAsync(promptModel.Description);
+            showPreview = true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error generating ticket: {ex.Message}";
+            generatedTicket = null;
+        }
+        finally
+        {
+            isGenerating = false;
+        }
+    }
+
+    private async Task SaveTicket()
+    {
+        if (generatedTicket == null)
+            return;
+
+        try
+        {
+            errorMessage = null;
+            var ticketToCreate = new Ticket
+            {
+                Title = generatedTicket.Title,
+                Category = generatedTicket.Category,
+                Description = generatedTicket.Description
+            };
+            await TicketService.AddTicketAsync(ticketToCreate);
+            await LoadTickets();
+
+            // Reset the form
+            promptModel = new();
+            showPreview = false;
+            generatedTicket = new();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving ticket: {ex.Message}";
+        }
+    }
+}

@@ -1,0 +1,57 @@
+﻿@namespace IncidentAgent.Webapp.Components.Pages
+@rendermode InteractiveServer
+@page "/knowledgebase"
+@using IncidentAgent.Models
+@using IncidentAgent.Web.Components
+@inject IKnowledgeBaseService KnowledgeBaseService
+@inject NavigationManager NavigationManager
+
+
+<PageTitle>Knowledge Base</PageTitle>
+
+<h1>Knowledge Base</h1>
+
+@if (entries == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Solution</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entry in entries)
+                {
+                    <tr>
+                        <td>@entry.Title</td>
+                        <td>@(entry.Solution?.Length > 100 ? entry.Solution[..100] + "..." : entry.Solution)</td>
+                        <td>@entry.Category</td>
+                        <td><button class="btn btn-info" @onclick="@(() => NavigateToDetail(entry.Id))">Details</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private List<KnowledgeBaseEntry>? entries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        entries = await KnowledgeBaseService.GetKnowledgeBaseEntries();
+    }
+
+    private void NavigateToDetail(string id)
+    {
+        NavigationManager.NavigateTo($"/knowledgebase/{id}");
+    }
+}
