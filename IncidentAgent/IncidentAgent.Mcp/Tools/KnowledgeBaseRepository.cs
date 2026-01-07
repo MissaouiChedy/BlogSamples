@@ -1,8 +1,9 @@
 ﻿using IncidentAgent.Models;
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
+using Azure.Core;
 
 namespace IncidentAgent.Mcp.Tools
 {
@@ -10,21 +11,12 @@ namespace IncidentAgent.Mcp.Tools
     {
         private readonly Container _container;
 
-        public KnowledgeBaseRepository(IConfiguration configuration)
+        public KnowledgeBaseRepository(IOptions<CosmosDBConfiguration> cosmosDbOptions)
         {
-            var endpoint = configuration["CosmosDb:Endpoint"] ??
-                throw new ArgumentNullException("CosmosDb:Endpoint configuration is missing");
-            var databaseId = configuration["CosmosDb:DatabaseId"] ??
-                throw new ArgumentNullException("CosmosDb:DatabaseId configuration is missing");
-            var containerId = "KnowledgeBase";
-            var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
-            {
-                ExcludeVisualStudioCredential = false,
-                ExcludeAzureCliCredential = false,
-                ExcludeManagedIdentityCredential = false,
-            });
-            var cosmosClient = new CosmosClient(endpoint, credential);
-            _container = cosmosClient.GetContainer(databaseId, containerId);
+            CosmosDBConfiguration cosmosConfig = cosmosDbOptions.Value;
+            TokenCredential credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions());
+            CosmosClient cosmosClient = new CosmosClient(cosmosConfig.Endpoint, credential);
+            _container = cosmosClient.GetContainer(cosmosConfig.DatabaseId, cosmosConfig.ContainerId);
         }
 
         public async Task<KnowledgeBaseEntry> AddKnowledgeBaseEntry(KnowledgeBaseEntry entry)
@@ -36,7 +28,7 @@ namespace IncidentAgent.Mcp.Tools
 
         public async Task<List<KnowledgeBaseEntry>> SearchKnowledgeBaseEntries(string searchQuery)
         {
-            string words = string.Join(",", Regex
+            string queryWords = string.Join(",", Regex
                 .Split(searchQuery, @"\s+")
                 .Where(w => !string.IsNullOrWhiteSpace(w))
                 .Select(w => $"'{w}'")
@@ -44,10 +36,10 @@ namespace IncidentAgent.Mcp.Tools
 
             var query = new QueryDefinition(
                 @$"SELECT * FROM c WHERE
-                FullTextContainsAny(c.Title, {words}) OR
-                FullTextContainsAny(c.Issue, {words}) OR
-                FullTextContainsAny(c.Solution, {words}) OR
-                FullTextContainsAny(c.Discussion, {words})");
+                FullTextContainsAny(c.Title, {queryWords}) OR
+                FullTextContainsAny(c.Issue, {queryWords}) OR
+                FullTextContainsAny(c.Solution, {queryWords}) OR
+                FullTextContainsAny(c.Discussion, {queryWords})");
 
             var iterator = _container.GetItemQueryIterator<KnowledgeBaseEntry>(query);
             var results = new List<KnowledgeBaseEntry>();

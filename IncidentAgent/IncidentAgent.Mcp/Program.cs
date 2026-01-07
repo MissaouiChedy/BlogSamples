@@ -2,6 +2,9 @@ using IncidentAgent.Mcp.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<CosmosDBConfiguration>(
+    builder.Configuration.GetSection("CosmosDb"));
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -38,5 +41,6 @@ app.UseCors();
 app.MapGet("/api/healthz", () => Results.Ok("Healthy"));
 
 app.MapMcp("/api/mcp");
-app.Run();
+
+await app.RunAsync();
 
