@@ -35,7 +35,7 @@ resource "azurerm_windows_web_app" "app" {
   app_settings = {
     ASPNETCORE_ENVIRONMENT      = "Development"
     WEBSITE_RUN_FROM_PACKAGE    = "1"
-    CosmosDb__Endpoint          = azurerm_cosmosdb_account.ticket_db.endpoint
+    CosmosDb__Endpoint          = data.azurerm_cosmosdb_account.ticket_db_account.endpoint
     CosmosDb__DatabaseId        = azurerm_cosmosdb_sql_database.tickets.name
     CosmosDb__ContainerId       = azurerm_cosmosdb_sql_container.ticket_container.name
     AzureOpenAI__Endpoint       = local.foundry_endpoint

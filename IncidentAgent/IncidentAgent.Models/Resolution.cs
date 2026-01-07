@@ -4,6 +4,11 @@ namespace IncidentAgent.Models
 {
     public class Resolution
     {
+        /* id field naming should be starting with lowercase to work with Azure Function Cosmos 
+         * DB output binding
+         */
+
+        [JsonProperty("id")]
         public string id { get; set; } = Guid.NewGuid().ToString();
 
         [JsonProperty("ticketId")]

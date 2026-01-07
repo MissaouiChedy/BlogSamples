@@ -1,3 +1,4 @@
+using OpenAI;
 using IncidentAgent.Models;
 using Azure.AI.OpenAI;
 using Azure.Identity;
@@ -5,8 +6,8 @@ using Microsoft.Agents.AI;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using ModelContextProtocol.Client;
-using OpenAI;
 using System.Text;
 using System.Text.Json;
 using HttpClientTransport = ModelContextProtocol.Client.HttpClientTransport;
@@ -20,25 +21,23 @@ namespace IncidentAgent.ResolutionTrigger
         private readonly string _knowledgeBaseMcpServerUrl;
         private readonly AzureOpenAIClient _client;
 
-        public ResolutionGenerationFunction(ILoggerFactory loggerFactory)
+        public ResolutionGenerationFunction(ILoggerFactory loggerFactory, IOptions<AgentConfiguration> agentConfigOptions)
         {
             _logger = loggerFactory.CreateLogger<ResolutionGenerationFunction>();
 
-            var endpoint = Environment.GetEnvironmentVariable("AzureOpenAI__Endpoint")
-                ?? throw new ArgumentNullException("AzureOpenAI__Endpoint env var is missing");
-            _deploymentName = Environment.GetEnvironmentVariable("AzureOpenAI__DeploymentName")
-                ?? throw new ArgumentNullException("AzureOpenAI__DeploymentName env var is missing");
-            _knowledgeBaseMcpServerUrl = Environment.GetEnvironmentVariable("AzureOpenAI__KnowledgeBaseMCPServerUrl")
-                ?? throw new ArgumentNullException("KnowledgeBaseMcpServerUrl env var is missing");
+            var agentConfiguration = agentConfigOptions.Value;
+
+            _deploymentName = agentConfiguration.DeploymentName;
+            _knowledgeBaseMcpServerUrl = agentConfiguration.KnowledgeBaseMcpServerUrl;
 
             var credential = new DefaultAzureCredential();
 
             _client = new(
-                new Uri(endpoint),
+                new Uri(agentConfiguration.Endpoint),
                 credential);
         }
 
-        [Function("Function1")]
+        [Function("ResolutionGenerationFunction")]
         [CosmosDBOutput("TicketDB", "Resolutions",
             Connection = "COSMOS_CONNECTION",
             CreateIfNotExists = false)]
@@ -50,17 +49,16 @@ namespace IncidentAgent.ResolutionTrigger
             CreateLeaseContainerIfNotExists = false)] IReadOnlyList<Ticket> input)
         {
 
-            _logger.LogInformation("Running Functions");
+            _logger.LogInformation("Starting Resolution Generation");
             var resolutions = new List<Resolution>();
 
             if (input != null && input.Count > 0)
             {
-                _logger.LogInformation($"Documents modified: {input.Count}");
+                _logger.LogInformation("Documents modified: {InputCount}", input.Count);
 
                 foreach (var ticket in input)
                 {
-                    _logger.LogInformation($"Processing ticket: {ticket.Id}");
-
+                    _logger.LogInformation("Processing ticket: {TicketId}", ticket.Id);
 
                     string[] steps = await GenerateResolutionForTicket(ticket);
 
@@ -73,12 +71,12 @@ namespace IncidentAgent.ResolutionTrigger
                     };
 
                     resolutions.Add(resolution);
-                    _logger.LogInformation($"Created resolution {resolution.id} for ticket {ticket.Id}");
+                    _logger.LogInformation("Created resolution {ResolutionId} for ticket {TicketId}", resolution.id, ticket.Id);
                 }
             }
             else
             {
-                _logger.LogInformation("No Documents to process");
+                _logger.LogInformation("No Tickets to process");
             }
 
             return resolutions;
@@ -92,6 +90,7 @@ namespace IncidentAgent.ResolutionTrigger
                     TransportMode = HttpTransportMode.StreamableHttp,
                     Endpoint = new Uri(_knowledgeBaseMcpServerUrl),
                 }));
+
             IList<McpClientTool> toolsInKBMcp = await kbTools.ListToolsAsync();
 
             var resolutionAgent = _client
@@ -113,7 +112,8 @@ namespace IncidentAgent.ResolutionTrigger
                 ?? [];
         }
 
-        private async ValueTask<object?> FunctionCallMiddleware(AIAgent callingAgent, FunctionInvocationContext context, Func<FunctionInvocationContext, CancellationToken, ValueTask<object?>> next, CancellationToken cancellationToken)
+        private async ValueTask<object?> FunctionCallMiddleware(AIAgent callingAgent, FunctionInvocationContext context,
+            Func<FunctionInvocationContext, CancellationToken, ValueTask<object?>> next, CancellationToken cancellationToken)
         {
             StringBuilder functionCallDetails = new();
             functionCallDetails.Append($"Tool Call: '{context.Function.Name}'");

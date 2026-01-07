@@ -27,7 +27,7 @@ resource "azurerm_windows_web_app" "mcp_server" {
   app_settings = {
     ASPNETCORE_ENVIRONMENT   = "Development"
     WEBSITE_RUN_FROM_PACKAGE = "1"
-    CosmosDb__Endpoint       = azurerm_cosmosdb_account.ticket_db.endpoint
+    CosmosDb__Endpoint       = data.azurerm_cosmosdb_account.ticket_db_account.endpoint
     CosmosDb__DatabaseId     = azurerm_cosmosdb_sql_database.tickets.name
 
     AZURE_TENANT_ID = azurerm_user_assigned_identity.openai_identity.tenant_id

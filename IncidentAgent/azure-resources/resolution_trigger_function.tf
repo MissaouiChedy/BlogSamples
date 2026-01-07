@@ -20,8 +20,8 @@ resource "azurerm_windows_function_app" "main_azure_function_app" {
     APPLICATIONINSIGHTS_CONNECTION_STRING  = azurerm_application_insights.main_application_insights.connection_string
     AZURE_TENANT_ID                        = azurerm_user_assigned_identity.openai_identity.tenant_id
     AZURE_CLIENT_ID                        = azurerm_user_assigned_identity.openai_identity.client_id
-    COSMOS_CONNECTION                      = azurerm_cosmosdb_account.ticket_db.primary_sql_connection_string
-    CosmosDb__Endpoint                     = azurerm_cosmosdb_account.ticket_db.endpoint
+    COSMOS_CONNECTION                      = data.azurerm_cosmosdb_account.ticket_db_account.primary_sql_connection_string
+    CosmosDb__Endpoint                     = data.azurerm_cosmosdb_account.ticket_db_account.endpoint
     CosmosDb__DatabaseId                   = azurerm_cosmosdb_sql_database.tickets.name
     CosmosDb__ContainerId                  = azurerm_cosmosdb_sql_container.ticket_container.name
     AzureOpenAI__Endpoint                  = local.openai_endpoint
