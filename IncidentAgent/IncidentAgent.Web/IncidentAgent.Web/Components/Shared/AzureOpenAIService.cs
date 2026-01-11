@@ -2,6 +2,8 @@ using IncidentAgent.Models;
 using Azure;
 using Azure.AI.Agents.Persistent;
 using Azure.Identity;
+using Microsoft.Extensions.Options;
+using IncidentAgent.Web.Components.Configuration;
 
 namespace IncidentAgent.Web.Components.Shared
 {
@@ -23,13 +25,11 @@ namespace IncidentAgent.Web.Components.Shared
         private readonly PersistentAgentsClient _client;
         private readonly string _deploymentName;
         
-        public AzureOpenAIService(IConfiguration configuration)
+        public AzureOpenAIService(IOptions<AzureOpenAISettings> azureOptions)
         {
-            var endpoint = configuration["AzureOpenAI:Endpoint"] ??
-                throw new ArgumentNullException("AzureOpenAI:Endpoint configuration is missing");
-
-            _deploymentName = configuration["AzureOpenAI:DeploymentName"] ??
-                throw new ArgumentNullException("AzureOpenAI:DeploymentName configuration is missing");
+            var settings = azureOptions.Value;
+            var endpoint = settings.Endpoint;
+            _deploymentName = settings.DeploymentName;
 
             _client = new PersistentAgentsClient(endpoint, new DefaultAzureCredential());
 

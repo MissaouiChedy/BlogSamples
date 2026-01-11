@@ -1,6 +1,8 @@
 using Microsoft.Azure.Cosmos;
 using Azure.Identity;
 using IncidentAgent.Models;
+using Microsoft.Extensions.Options;
+using IncidentAgent.Web.Components.Configuration;
 
 namespace IncidentAgent.Web.Components.Shared
 {
@@ -13,13 +15,12 @@ namespace IncidentAgent.Web.Components.Shared
     {
         private readonly Container _container;
 
-        public CosmosDbResolutionService(IConfiguration configuration)
+        public CosmosDbResolutionService(IOptions<CosmosDbSettings> cosmosOptions)
         {
-            var endpoint = configuration["CosmosDb:Endpoint"] ??
-                throw new ArgumentNullException("CosmosDb:Endpoint configuration is missing");
-            var databaseId = configuration["CosmosDb:DatabaseId"] ??
-                throw new ArgumentNullException("CosmosDb:DatabaseId configuration is missing");
-            var containerId = "Resolutions";
+            var settings = cosmosOptions.Value;
+            var endpoint = settings.Endpoint;
+            var databaseId = settings.DatabaseId;
+            var containerId = settings.ResolutionsContainerId;
             var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
             {
                 ExcludeVisualStudioCredential = false,

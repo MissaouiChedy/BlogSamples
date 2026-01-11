@@ -1,8 +1,9 @@
 ﻿using IncidentAgent.Models;
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
-using System.Collections.Generic;
 using System.Net;
+using Microsoft.Extensions.Options;
+using IncidentAgent.Web.Components.Configuration;
 
 namespace IncidentAgent.Web.Components.Shared
 {
@@ -15,13 +16,12 @@ namespace IncidentAgent.Web.Components.Shared
     {
         private readonly Container _container;
 
-        public KnowledgeBaseService(IConfiguration configuration)
+        public KnowledgeBaseService(IOptions<CosmosDbSettings> cosmosOptions)
         {
-            var endpoint = configuration["CosmosDb:Endpoint"] ??
-                throw new ArgumentNullException("CosmosDb:Endpoint configuration is missing");
-            var databaseId = configuration["CosmosDb:DatabaseId"] ??
-                throw new ArgumentNullException("CosmosDb:DatabaseId configuration is missing");
-            var containerId = "KnowledgeBase";
+            var settings = cosmosOptions.Value;
+            var endpoint = settings.Endpoint;
+            var databaseId = settings.DatabaseId;
+            var containerId = settings.KnowledgeBaseContainerId;
             var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
             {
                 ExcludeVisualStudioCredential = false,

@@ -33,14 +33,16 @@ resource "azurerm_windows_web_app" "app" {
   client_affinity_enabled = true
 
   app_settings = {
-    ASPNETCORE_ENVIRONMENT      = "Development"
-    WEBSITE_RUN_FROM_PACKAGE    = "1"
-    CosmosDb__Endpoint          = data.azurerm_cosmosdb_account.ticket_db_account.endpoint
-    CosmosDb__DatabaseId        = azurerm_cosmosdb_sql_database.tickets.name
-    CosmosDb__ContainerId       = azurerm_cosmosdb_sql_container.ticket_container.name
-    AzureOpenAI__Endpoint       = local.foundry_endpoint
-    AzureOpenAI__DeploymentName = var.model_deployment_name
-    AZURE_TENANT_ID             = azurerm_user_assigned_identity.openai_identity.tenant_id
-    AZURE_CLIENT_ID             = azurerm_user_assigned_identity.openai_identity.client_id
+    ASPNETCORE_ENVIRONMENT             = "Development"
+    WEBSITE_RUN_FROM_PACKAGE           = "1"
+    CosmosDb__Endpoint                 = data.azurerm_cosmosdb_account.ticket_db_account.endpoint
+    CosmosDb__DatabaseId               = azurerm_cosmosdb_sql_database.tickets.name
+    CosmosDb__TicketContainerId        = azurerm_cosmosdb_sql_container.ticket_container.name
+    CosmosDb__ResolutionsContainerId   = azurerm_cosmosdb_sql_container.resolution_container.name
+    CosmosDb__KnowledgeBaseContainerId = azapi_resource.knowledge_base_container.name
+    AzureOpenAI__Endpoint              = local.foundry_endpoint
+    AzureOpenAI__DeploymentName        = var.model_deployment_name
+    AZURE_TENANT_ID                    = azurerm_user_assigned_identity.openai_identity.tenant_id
+    AZURE_CLIENT_ID                    = azurerm_user_assigned_identity.openai_identity.client_id
   }
 }

@@ -1,48 +1,6 @@
-
-# resource "azurerm_cosmosdb_account" "ticket_db" {
-#   name                = "cosmos-ticket-classification-${local.resources_suffix}"
-#   location            = var.location
-#   resource_group_name = data.azurerm_resource_group.main_resource_group.name
-#   offer_type          = "Standard"
-#   kind                = "GlobalDocumentDB"
-
-#   automatic_failover_enabled = false
-
-#   capabilities {
-#     name = "EnableServerless"
-#   }
-
-#   consistency_policy {
-#     consistency_level = "Session"
-#   }
-
-#   geo_location {
-#     location          = var.location
-#     failover_priority = 0
-#   }
-# }
-
 data "azurerm_cosmosdb_account" "ticket_db_account" {
-  name = "cosmos-ticket-classification-${local.resources_suffix}"
-  #location            = var.location
+  name                = "cosmos-ticket-classification-${local.resources_suffix}"
   resource_group_name = data.azurerm_resource_group.main_resource_group.name
-  # offer_type          = "Standard"
-  # kind                = "GlobalDocumentDB"
-
-  # automatic_failover_enabled = false
-
-  # capabilities {
-  #   name = "EnableServerless"
-  # }
-
-  # consistency_policy {
-  #   consistency_level = "Session"
-  # }
-
-  # geo_location {
-  #   location          = var.location
-  #   failover_priority = 0
-  # }
 }
 
 resource "azurerm_cosmosdb_sql_database" "tickets" {
