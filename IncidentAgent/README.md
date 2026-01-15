@@ -1,8 +1,300 @@
 # Incident Agent
 
-## Overview
+A multi-agent system sample for automated support ticket creation and resolution using Azure AI services and Model Context Protocol (MCP).
 
-Incident Agent is a sample multi-agent system that performs the following:
-- Structure support request messages into a support ticket with Title, Category and Description
-- Generate Resolution steps for the support request
-- Maintain a knowledge base of internal system issues
+This sample is used as a demo in the following sessions:
+- [PaaS to the Future: Modern AI-First Architectures on Azure](https://blog.techdominator.com/slides/PaaS_To_the_Future.pdf)
+- [PaaS to the Future: Modern AI-First Architectures on Azure (V2)](https://blog.techdominator.com/slides/PaaS_To_the_Future_2.pdf)
+
+## Description
+
+Incident Agent demonstrates a complete multi-agent architecture that:
+
+- **Transforms unstructured support requests** into structured tickets with Title, Category, and Description
+- **Generates resolution steps** using AI-powered agents
+- **Maintains a knowledge base** for resolving common issues, particularly for the hypothetical internal system **MELTCORE 6**
+- **Leverages MCP (Model Context Protocol)** for tool-based agent interactions
+
+The system showcases how multiple AI agents can work together in an event-driven architecture using Azure Functions, Cosmos DB change feed, and Microsoft Foundry.
+
+## Pre-Requisites
+
+### Azure Resources
+- **Azure Subscription** with access to create resources
+- **Microsoft Foundry** with a deployed GPT-4.1 (or compatible) model
+- **Azure Cosmos DB** account with NoSQL API
+- **Azure App Service** for hosting the web application
+- **Azure Functions** for the Resolution Agent
+
+### Development Tools
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
+- [Terraform](https://www.terraform.io/downloads) (for infrastructure provisioning)
+- [Azure Functions Core Tools](https://docs.microsoft.com/azure/azure-functions/functions-run-local)
+
+### NuGet Packages (automatically restored)
+- `Microsoft.Agents.AI` - Microsoft Agents Framework
+- `Azure.AI.OpenAI` - Azure OpenAI client
+- `ModelContextProtocol` - MCP SDK for .NET
+- `Microsoft.Azure.Cosmos` - Cosmos DB client
+- `Microsoft.Azure.Functions.Worker` - Azure Functions isolated worker
+
+## Setup Overview
+
+### 1. Provision Azure Infrastructure
+
+Navigate to the `azure-resources` directory and apply the Terraform configuration:
+
+```bash
+cd azure-resources
+terraform init
+terraform plan -var="subscription=<your-subscription-id>" -var="user_principal_id=<your-principal-id>"
+terraform apply -var="subscription=<your-subscription-id>" -var="user_principal_id=<your-principal-id>"
+```
+
+This creates:
+- Resource Group
+- Microsoft Foundry with model deployment
+- Cosmos DB account with `TicketDB` database and containers (`Tickets`, `Resolutions`, `KnowledgeBase`)
+- App Service for the Web App
+- Azure Function App for the Resolution Agent
+- MCP Server App Service
+- Managed Identity with appropriate RBAC roles
+
+**Note that** the following resources must be created in advance:
+- Resource Group
+- Microsoft Foundry Resource
+- Microsoft Foundry Project
+- Microsoft Foundry Model Deployment
+- Azure Cosmos DB Account
+
+### 2. Configure Application Settings
+
+Update the configuration files with your Azure resource endpoints:
+
+**Web App** (`IncidentAgent.Web/IncidentAgent.Web/appsettings.json`):
+```json
+{
+  "CosmosDb": {
+    "Endpoint": "https://<your-cosmos-account>.documents.azure.com:443/",
+    "DatabaseId": "TicketDB",
+    "TicketContainerId": "Tickets",
+    "ResolutionsContainerId": "Resolutions",
+    "KnowledgeBaseContainerId": "KnowledgeBase"
+  },
+  "AzureOpenAI": {
+    "Endpoint": "https://<your-ai-foundry>.services.ai.azure.com/api/projects/<your-project>",
+    "DeploymentName": "<your-model-deployment-name>"
+  }
+}
+```
+
+**MCP Server** (`IncidentAgent.Mcp/appsettings.json`):
+```json
+{
+  "CosmosDb": {
+    "Endpoint": "https://<your-cosmos-account>.documents.azure.com:443/",
+    "DatabaseId": "TicketDB",
+    "ContainerId": "KnowledgeBase"
+  }
+}
+```
+
+**Azure Function** - Configure via `local.settings.json` or Azure App Settings:
+- `COSMOS_CONNECTION` - Cosmos DB connection string
+- `AgentConfiguration__Endpoint` - Microsoft Foundry endpoint
+- `AgentConfiguration__DeploymentName` - Model deployment name
+- `AgentConfiguration__KnowledgeBaseMcpServerUrl` - MCP Server URL
+
+### 3. Load Knowledge Base Data
+
+Use the utility console app to seed the knowledge base:
+
+```bash
+cd Utils/KnowledgBaseDataLoader
+dotnet run
+```
+
+## Web App Overview
+
+**Project:** `IncidentAgent.Web`
+
+The Web App serves as the user interface for the Incident Agent system.
+
+### Technology Stack
+- **Framework:** Blazor (.NET 10) with Interactive Server and WebAssembly components
+- **Hosting:** Azure App Service
+- **AI Integration:** Azure OpenAI via Microsoft Agents Framework
+
+### Key Features
+- Submit support requests in plain text
+- View structured tickets with AI-generated Title, Category, and Description
+- Display resolution steps once generated by the Resolution Agent
+- Browse and search the knowledge base
+
+### Architecture
+```
+┌─────────────────────────────────────────────────────┐
+│                    Blazor Web App                   │
+├─────────────────────────────────────────────────────┤
+│  ┌─────────────────┐    ┌─────────────────────────┐ │
+│  │  Ticket Agent   │──▶│   Microsoft Foundry     │  │
+│  │  (LLM-powered)  │    │   (GPT-4.1 Model)       │ │
+│  └─────────────────┘    └─────────────────────────┘ │
+│           │                                         │
+│           ▼                                         │
+│  ┌─────────────────┐                                │
+│  │   Cosmos DB     │                                │
+│  │   (Tickets)     │                                │
+│  └─────────────────┘                                │
+└─────────────────────────────────────────────────────┘
+```
+
+### Ticket Model
+Tickets are structured with the following fields:
+- `Id` - Unique identifier
+- `Title` - AI-generated summary of the issue
+- `Category` - One of: `Hardware`, `Software`, `Network`, `Security`
+- `Description` - Professional, objective description of the issue
+
+## MCP Server Overview
+
+**Project:** `IncidentAgent.Mcp`
+
+The MCP Server provides Model Context Protocol tools for knowledge base operations.
+
+### Technology Stack
+- **Framework:** ASP.NET Core Minimal API (.NET 10)
+- **Protocol:** Model Context Protocol (MCP) with HTTP/Streamable transport
+- **Storage:** Azure Cosmos DB with Full-Text Search
+
+### Exposed MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `SearchKnowledgeBase` | Search the KABLAM Company incident resolution knowledge base using full-text search |
+| `AddKnowledgeEntry` | Add new knowledge base entries for resolved incidents |
+
+### Knowledge Base Entry Model
+```
+- Id: Unique identifier
+- Title: Entry title
+- Issue: Description of the problem
+- Solution: Resolution steps
+- Discussion: Additional context and notes
+- Category: Classification category
+```
+
+### Endpoint
+- **Health Check:** `GET /api/healthz`
+- **MCP Endpoint:** `POST /api/mcp`
+
+## Azure Function Overview
+
+**Project:** `IncidentAgent.ResolutionTrigger`
+
+The Resolution Agent runs as an Azure Function triggered by Cosmos DB change feed.
+
+### Technology Stack
+- **Runtime:** Azure Functions v4 (Isolated Worker)
+- **Framework:** .NET 10
+- **Trigger:** Cosmos DB Change Feed
+- **AI Integration:** Azure OpenAI + Microsoft Agents Framework
+- **MCP Client:** Connects to the MCP Server for knowledge base tools
+
+### Function: `ResolutionGenerationFunction`
+
+**Trigger:** Cosmos DB change feed on the `Tickets` container
+
+**Output:** Cosmos DB output binding to the `Resolutions` container
+
+### Workflow
+1. Detects new tickets in the `Tickets` container
+2. Initializes MCP client connection to the Knowledge Base server
+3. Creates a Resolution Agent with access to MCP tools
+4. Generates resolution steps using the LLM, querying the knowledge base for MELTCORE 6 issues
+5. For unknown MELTCORE 6 issues, adds new entries to the knowledge base
+6. Outputs the resolution to the `Resolutions` container
+
+### Resolution Model
+```
+- id: Unique identifier
+- TicketId: Reference to the source ticket
+- Status: Resolution status (e.g., "Pending")
+- Steps: Array of resolution steps
+- Category: Ticket category
+```
+
+## How to Use?
+
+### Running Locally
+
+1. **Start the MCP Server:**
+   ```bash
+   cd IncidentAgent.Mcp
+   dotnet run
+   ```
+
+2. **Start the Azure Function (in a new terminal):**
+   ```bash
+   cd IncidentAgent.ResolutionTrigger
+   func start
+   ```
+
+3. **Start the Web App (in a new terminal):**
+   ```bash
+   cd IncidentAgent.Web/IncidentAgent.Web
+   dotnet run
+   ```
+
+4. **Open the Web App** in your browser at `https://localhost:5001` (or the configured port)
+
+### Submitting a Support Request
+
+1. Navigate to the Web App
+2. Enter a support request in plain text, for example:
+   > "My MELTCORE 6 inventory system isn't updating stock numbers after I complete purchase orders."
+3. Submit the request
+4. The Ticket Agent processes the message and creates a structured ticket
+5. The ticket is stored in Cosmos DB, triggering the Resolution Agent
+6. View the generated resolution steps once processing completes
+
+### Sample Requests
+
+The `Messages/` folder contains example support requests:
+
+- **Generic network issue** - Tests general ticket categorization
+- **Known MELTCORE 6 issue** - Tests knowledge base lookup
+- **Unknown MELTCORE 6 issue** - Tests knowledge base entry creation
+
+## Notes
+
+### Authentication
+- All Azure services use **Managed Identity** for authentication in production
+- Local development uses **DefaultAzureCredential** (Azure CLI, Visual Studio credentials)
+
+### Cosmos DB Configuration
+- The `KnowledgeBase` container uses **Full-Text Search** for semantic queries
+- Partition key for all containers is `/Category`
+- Change feed with lease container (`leases`) enables the Azure Function trigger
+
+### Model Context Protocol
+- The MCP Server uses **stateless HTTP transport** mode
+- Tools are automatically discovered using `[McpServerToolType]` and `[McpServerTool]` attributes
+
+### Limitations
+- This is a **sample project** for demonstration purposes
+- The knowledge base is seeded with hypothetical MELTCORE 6 issues
+- Error handling and retry logic are simplified for clarity
+
+## Contributing
+
+Please checkout [the contribution guidelines](../CONTRIBUTING.md) for contributing.
+
+## References
+
+Microsoft Agent Framework code samples available in the [rwjdk/MicrosoftAgentFrameworkSamples](https://github.com/rwjdk/MicrosoftAgentFrameworkSamples) were very useful in preparing this sample. Thank you [@rwjdk](https://github.com/rwjdk) !
+
+---
+
+**Disclaimer:** MELTCORE 6 is a fictional internal system used for demonstration purposes only.
