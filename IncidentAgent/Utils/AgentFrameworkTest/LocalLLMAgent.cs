@@ -1,4 +1,9 @@
-﻿using Azure.AI.OpenAI;
+﻿// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!  WARNING: This sample file uses deprecated and out of date APIs.
+// !!  The code is provided for reference only and should not be used in production.
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+using Azure.AI.OpenAI;
 using Azure.Identity;
 using Microsoft.Agents.AI;
 using Microsoft.AI.Foundry.Local;

@@ -20,15 +20,20 @@ variable "resource_group_name" {
 
 variable "ai_foundry_name" {
   type    = string
-  default = "aif-main-foundry-f1cc"
+  default = "aif-main-foundry-a8a2"
 }
 
 variable "ai_foundry_project_name" {
   type    = string
-  default = "proj-main-f1cc"
+  default = "proj-main-a8a2"
 }
 
 variable "model_deployment_name" {
   type    = string
-  default = "incident-classification-gpt41"
+  default = "gpt-5.4-mini"
+}
+
+variable "cosmos_db_account_name" {
+  type    = string
+  default = "cosmos-ticket-classification-a8a2"
 }

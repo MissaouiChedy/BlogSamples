@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using ModelContextProtocol.Client;
 using System.Text;
 using System.Text.Json;
+using OpenAI.Chat;
 using HttpClientTransport = ModelContextProtocol.Client.HttpClientTransport;
 
 namespace IncidentAgent.ResolutionTrigger
@@ -95,7 +96,7 @@ namespace IncidentAgent.ResolutionTrigger
 
             var resolutionAgent = _client
                 .GetChatClient(_deploymentName)
-                .CreateAIAgent(
+                .AsAIAgent(
                     name: "KnowledgeBaseManagerAgent",
                     instructions: @"You are a support engineer. 
                     Given a ticket description, generate a step-by-step resolution plan as a JSON array of strings.

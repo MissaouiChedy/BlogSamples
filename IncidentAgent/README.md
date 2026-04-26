@@ -5,6 +5,7 @@ A multi-agent system sample for automated support ticket creation and resolution
 This sample is used as a demo in the following sessions:
 - [PaaS to the Future: Modern AI-First Architectures on Azure](https://blog.techdominator.com/slides/PaaS_To_the_Future.pdf)
 - [PaaS to the Future: Modern AI-First Architectures on Azure (V2)](https://blog.techdominator.com/slides/PaaS_To_the_Future_2.pdf)
+- [PaaS to the Future: Modern AI-First Architectures on Azure (V3)](https://blog.techdominator.com/slides/PaaS_To_the_Future_3.pdf)
 
 ## Description
 
@@ -21,29 +22,61 @@ The system showcases how multiple AI agents can work together in an event-driven
 
 ### Azure Resources
 - **Azure Subscription** with access to create resources
-- **Microsoft Foundry** with a deployed GPT-4.1 (or compatible) model
+- **Microsoft Foundry** with a deployed GPT-5.4-mini model
 - **Azure Cosmos DB** account with NoSQL API
-- **Azure App Service** for hosting the web application
-- **Azure Functions** for the Resolution Agent
 
 ### Development Tools
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
+- [Powershell](https://learn.microsoft.com/en-us/powershell/scripting/install/install-powershell)
 - [Terraform](https://www.terraform.io/downloads) (for infrastructure provisioning)
 - [Azure Functions Core Tools](https://docs.microsoft.com/azure/azure-functions/functions-run-local)
-
-### NuGet Packages (automatically restored)
-- `Microsoft.Agents.AI` - Microsoft Agents Framework
-- `Azure.AI.OpenAI` - Azure OpenAI client
-- `ModelContextProtocol` - MCP SDK for .NET
-- `Microsoft.Azure.Cosmos` - Cosmos DB client
-- `Microsoft.Azure.Functions.Worker` - Azure Functions isolated worker
 
 ## Setup Overview
 
 ### 1. Provision Azure Infrastructure
 
-Navigate to the `azure-resources` directory and apply the Terraform configuration:
+Navigate to the `azure-resources` directory and changes the deployment suffix under `_locals.tf`
+```hcl
+locals {
+  resources_suffix = "a8a2" # Change this value
+  ...
+}
+```
+
+This ensures various resource names are unique.
+
+Also make sure to set existing resources names in `variables.tf`
+
+```hcl
+...
+variable "resource_group_name" {
+  type    = string
+  default = "rg-test-ticket-classification"
+}
+
+variable "ai_foundry_name" {
+  type    = string
+  default = "aif-main-foundry-a8a2"
+}
+
+variable "ai_foundry_project_name" {
+  type    = string
+  default = "proj-main-a8a2"
+}
+
+variable "model_deployment_name" {
+  type    = string
+  default = "gpt-5.4-mini"
+}
+
+variable "cosmos_db_account_name" {
+  type    = string
+  default = "cosmos-ticket-classification-a8a2"
+}
+```
+
+Then, apply the Terraform configuration:
 
 ```bash
 cd azure-resources
@@ -55,22 +88,22 @@ terraform apply -var="subscription=<your-subscription-id>" -var="user_principal_
 This creates:
 - Resource Group
 - Microsoft Foundry with model deployment
-- Cosmos DB account with `TicketDB` database and containers (`Tickets`, `Resolutions`, `KnowledgeBase`)
+- Cosmos DB database `TicketDB` and containers (`Tickets`, `Resolutions`, `KnowledgeBase`)
 - App Service for the Web App
 - Azure Function App for the Resolution Agent
 - MCP Server App Service
 - Managed Identity with appropriate RBAC roles
 
 **Note that** the following resources must be created in advance:
-- Resource Group
-- Microsoft Foundry Resource
-- Microsoft Foundry Project
-- Microsoft Foundry Model Deployment
-- Azure Cosmos DB Account
+- [Resource Group](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal)
+- [Microsoft Foundry Resource](https://learn.microsoft.com/en-us/azure/foundry/tutorials/quickstart-create-foundry-resources?tabs=azurecli)
+- [Microsoft Foundry Project](https://learn.microsoft.com/en-us/azure/foundry/how-to/create-projects?tabs=foundry)
+- [Microsoft Foundry Model Deployment](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/deploy-foundry-models)
+- [Azure Cosmos DB Account](https://learn.microsoft.com/en-us/azure/cosmos-db/quickstart-portal)
 
-### 2. Configure Application Settings
+### 2. Configure Application Settings (Local environment)
 
-Update the configuration files with your Azure resource endpoints:
+Update the configuration files with your Azure resource endpoints, for local executions:
 
 **Web App** (`IncidentAgent.Web/IncidentAgent.Web/appsettings.json`):
 ```json
@@ -114,6 +147,15 @@ Use the utility console app to seed the knowledge base:
 cd Utils/KnowledgBaseDataLoader
 dotnet run
 ```
+
+### 4. Deploy the Incident Agent Apps
+
+To deploy all Incident Agent Components to Azure, use the deployment powershell script:
+```
+./Install-IncidentAgentApps.ps1
+```
+
+The script will build, package and deploy all required applications leveraging information available in the terraform state.
 
 ## Web App Overview
 
@@ -281,6 +323,12 @@ The `Messages/` folder contains example support requests:
 ### Model Context Protocol
 - The MCP Server uses **stateless HTTP transport** mode
 - Tools are automatically discovered using `[McpServerToolType]` and `[McpServerTool]` attributes
+
+### AgentFrameworkTest
+
+> Be advised that the AgentFrameworkTest project **uses deprecated APIs**
+
+AgentFrameworkTest is a console application used as a test project. 
 
 ### Limitations
 - This is a **sample project** for demonstration purposes
