@@ -1,15 +1,15 @@
-using IncidentAgent.Models;
-using Azure;
-using Azure.AI.Agents.Persistent;
 using Azure.Identity;
-using Microsoft.Extensions.Options;
+using IncidentAgent.Models;
 using IncidentAgent.Web.Components.Configuration;
+using Microsoft.Extensions.Options;
+using Azure.AI.Projects;
+using Azure.AI.Projects.Agents;
 
 namespace IncidentAgent.Web.Components.Shared
 {
     public interface IAzureOpenAIService
     {
-        Task<Models.Ticket> GenerateTicketFromDescriptionAsync(string description);
+        Task<Ticket> GenerateTicketFromDescriptionAsync(string description);
     }
 
     public class AzureOpenAIService : IAzureOpenAIService
@@ -18,11 +18,12 @@ namespace IncidentAgent.Web.Components.Shared
         private readonly string _systemMessage = @"You are a helpful assistant that creates support tickets from descriptions. 
                 Create a well-formatted title that summarizes the issue.
                 Create a description that elaborates the issue with expert language
-                Return a structured response with the following fields only: Title, Description, Category
-                Category should be one of Hardware, Software, Network or Security
+                Return ONLY a valid JSON object with the following fields: Title, Description, Category
+                Category must be one of: Hardware, Software, Network or Security
+                Do not include any explanation, markdown, or text outside the JSON object.
                 ";
-        private readonly PersistentAgent _agentInfo;
-        private readonly PersistentAgentsClient _client;
+        private readonly ProjectsAgentVersion _agentVersion;
+        private readonly AIProjectClient _client;
         private readonly string _deploymentName;
         
         public AzureOpenAIService(IOptions<AzureOpenAISettings> azureOptions)
@@ -31,34 +32,41 @@ namespace IncidentAgent.Web.Components.Shared
             var endpoint = settings.Endpoint;
             _deploymentName = settings.DeploymentName;
 
-            _client = new PersistentAgentsClient(endpoint, new DefaultAzureCredential());
+            _client = new AIProjectClient(new Uri(endpoint), new DefaultAzureCredential());
 
-            PersistentAgent? agentInfo = _client.Administration
+            var agentInfo = _client
+                .AgentAdministrationClient
                 .GetAgents()
                 .FirstOrDefault(a => a.Name == _agentName);
             
             if (agentInfo is null)
             {
-                Response<PersistentAgent> aiFoundryAgent = _client.Administration.CreateAgent(
-                    _deploymentName,
-                    _agentName,
-                    "Support Ticket structuring agent",
-                    _systemMessage,
-                    temperature: 0.4f
-                );
-                agentInfo = aiFoundryAgent.Value;
+                DeclarativeAgentDefinition definition = new(_deploymentName)
+                {
+                    Instructions = _systemMessage,
+                    Temperature = 0.4f,
+                };
+                _agentVersion = _client
+                    .AgentAdministrationClient
+                    .CreateAgentVersion(_agentName, new ProjectsAgentVersionCreationOptions(definition)
+                    {
+                        Description = "Support Ticket structuring agent",
+                    })
+                    .Value;
             }
-            _agentInfo = agentInfo;
+            else
+            {
+                _agentVersion = agentInfo.GetLatestVersion();
+            }
         }
 
-        public async Task<Models.Ticket> GenerateTicketFromDescriptionAsync(string description)
+        public async Task<Ticket> GenerateTicketFromDescriptionAsync(string description)
         {
-            var agent = await _client.GetAIAgentAsync(_agentInfo.Id);
+            var agent = _client.AsAIAgent(_agentVersion);
 
-            var thread = agent.GetNewThread();
+            var session = await agent.CreateSessionAsync();
 
-
-            var chatResponse = await agent.RunAsync<Ticket>(description, thread);
+            var chatResponse = await agent.RunAsync<Ticket>(description, session);
 
             return chatResponse.Result;
         }

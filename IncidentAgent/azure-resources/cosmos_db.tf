@@ -1,5 +1,5 @@
 data "azurerm_cosmosdb_account" "ticket_db_account" {
-  name                = "cosmos-ticket-classification-${local.resources_suffix}"
+  name                = var.cosmos_db_account_name
   resource_group_name = data.azurerm_resource_group.main_resource_group.name
 }
 
