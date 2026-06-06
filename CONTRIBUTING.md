@@ -16,7 +16,7 @@ Please checkout the [github code of conduct](https://docs.github.com/en/site-pol
 ## Reporting issues
 Issues related to the samples should be reported as github issues.
 
-Please use the available [bug report template](./.github/ISSUE_TEMPLATE/bug_report.md) when opening an issue.
+Please use the available [bug report template](.github/ISSUE_TEMPLATE/bug_report.md) when opening an issue.
 The template already includes the expected structure and details to provide for a bug report.
 
 ## Suggesting Improvements
