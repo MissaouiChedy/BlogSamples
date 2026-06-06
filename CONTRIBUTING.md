@@ -16,13 +16,8 @@ Please checkout the [github code of conduct](https://docs.github.com/en/site-pol
 ## Reporting issues
 Issues related to the samples should be reported as github issues.
 
-In the issue description, please make sure to details the issue as much as relevant.
-
-Issue should be structured in the following format:
-- **Given:** (Pre-conditions)
-- **When:** (Actions)
-- **Expected:** (What was expected to occur)
-- **Actual:** (What actually occurred)
+Please use the available [bug report template](.github/ISSUE_TEMPLATE/bug_report.md) when opening an issue.
+The template already includes the expected structure and details to provide for a bug report.
 
 ## Suggesting Improvements
 Improvements should be suggested by creating an issue.
