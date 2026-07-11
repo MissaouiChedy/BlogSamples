@@ -1,2 +1,11 @@
 *.zip
 *.7z
+.tracking
+.tracking/*.md
+.tracking/**/*
+.Tracking
+.Tracking/*
+.Tracking/**/*
+.prompts
+.prompts/*
+.prompts/**/*
