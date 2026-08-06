@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/main-topic-event.schema.json",
+  "title": "MainTopicEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["Id", "Content", "AreaCode", "CreatedAt", "SentAt"],
+  "properties": {
+    "Id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "Content": {
+      "type": "integer"
+    },
+    "AreaCode": {
+      "type": "string",
+      "enum": ["EUROPE", "AMERICA", "AFRICA", "ASIA", "AUSTRALIA", "OTHER"]
+    },
+    "CreatedAt": {
+      "type": "string",
+      "description": "UTC timestamp with millisecond precision",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "SentAt": {
+      "type": "string",
+      "description": "UTC timestamp with millisecond precision",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    }
+  }
+}

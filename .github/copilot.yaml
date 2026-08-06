@@ -1,0 +1,8 @@
+paths:
+  exclude:
+  - '.tracking'
+  - '.tracking/**'
+  - '.tracking/*'
+  - '.prompts'
+  - '.prompts/**'
+  - '.prompts/*'

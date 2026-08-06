@@ -1,0 +1,26 @@
+{
+    "version": "2.0",
+    "extensions": {
+        "eventHubs": {
+            "maxEventBatchSize": 100,
+            "prefetchCount": 300,
+            "batchCheckpointFrequency": 50,
+            "targetUnprocessedEventThreshold": 100
+        }
+    },
+    "logging": {
+        "logLevel": {
+            "default": "Information",
+            "Function": "Information",
+            "Host.Results": "Information",
+            "Host.Aggregator": "Information"
+        },
+        "applicationInsights": {
+            "samplingSettings": {
+                "isEnabled": true,
+                "excludedTypes": "Request"
+            },
+            "enableLiveMetricsFilters": true
+        }
+    }
+}
