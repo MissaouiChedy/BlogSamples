@@ -22,8 +22,6 @@ Naviguez vers le dossier de l'exemple souhaité et suivez les instructions du RE
 
 Les exemples sont conçus pour être simples à prendre en main et à exécuter localement.
 
-## Licence
-
 Le code de ce dépôt est sous licence [MIT.](LICENSE)
 
 ## Contribuer
