@@ -30,7 +30,7 @@ It is comprise of:
 - Diagram depicting the structure
 - Text description of the structure
 
-Provide a mermaid diagram as a placeholder of the diagram.
+Provide the following text placeholder for the position of the diagram: <<DIAGRAM: <description of the diagram> >>
 
 # Examples
 
