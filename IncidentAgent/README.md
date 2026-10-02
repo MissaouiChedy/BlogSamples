@@ -168,7 +168,7 @@ The Web App serves as the user interface for the Incident Agent system.
 ### Technology Stack
 - **Framework:** Blazor (.NET 10) with Interactive Server and WebAssembly components
 - **Hosting:** Azure App Service
-- **AI Integration:** Azure OpenAI via Microsoft Agents Framework
+- **AI Integration:** Microsoft Foundry via Microsoft Agent Framework (`ChatClientAgent` created with `AIProjectClient.AsAIAgent()`)
 
 ### Key Features
 - Submit support requests in plain text
@@ -183,7 +183,7 @@ The Web App serves as the user interface for the Incident Agent system.
 ├─────────────────────────────────────────────────────┤
 │  ┌─────────────────┐    ┌─────────────────────────┐ │
 │  │  Ticket Agent   │──▶│   Microsoft Foundry     │  │
-│  │  (LLM-powered)  │    │   (GPT-4.1 Model)       │ │
+│  │  (LLM-powered)  │    │  (gpt-5.6-terra Model)  │ │
 │  └─────────────────┘    └─────────────────────────┘ │
 │           │                                         │
 │           ▼                                         │
@@ -328,9 +328,10 @@ The `Messages/` folder contains example support requests:
 
 ### AgentFrameworkTest
 
-> Be advised that the AgentFrameworkTest project **uses deprecated APIs**
+AgentFrameworkTest is a console application used as a test project. It contains the following samples:
 
-AgentFrameworkTest is a console application used as a test project. 
+- **BasicAgentSample** - Creates a Microsoft Foundry agent using the Microsoft Agent Framework (`AIProjectClient.AsAIAgent()`) and runs a simple prompt
+- **OpenAIAPISample** - Calls the Foundry-hosted model directly through the OpenAI Responses API
 
 ### Limitations
 - This is a **sample project** for demonstration purposes
