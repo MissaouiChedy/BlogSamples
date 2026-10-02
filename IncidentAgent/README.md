@@ -22,7 +22,7 @@ The system showcases how multiple AI agents can work together in an event-driven
 
 ### Azure Resources
 - **Azure Subscription** with access to create resources
-- **Microsoft Foundry** with a deployed GPT-5.4-mini model
+- **Microsoft Foundry** with a deployed gpt-5.6-terra model
 - **Azure Cosmos DB** account with NoSQL API
 
 ### Development Tools
@@ -67,7 +67,7 @@ variable "ai_foundry_project_name" {
 
 variable "model_deployment_name" {
   type    = string
-  default = "gpt-5.4-mini"
+  default = "gpt-5.6-terra"
 }
 
 variable "cosmos_db_account_name" {
@@ -155,6 +155,8 @@ To deploy all Incident Agent Components to Azure, use the deployment powershell 
 ./Install-IncidentAgentApps.ps1
 ```
 
+> **⚠️ Warning:** This deployment approach is for the sample only and is not suitable for real projects. The script reads resource details directly from Terraform state, which can contain secrets. Real projects should use a deployment process that does not expose or parse Terraform state this way.
+
 The script will build, package and deploy all required applications leveraging information available in the terraform state.
 
 ## Web App Overview
@@ -166,7 +168,7 @@ The Web App serves as the user interface for the Incident Agent system.
 ### Technology Stack
 - **Framework:** Blazor (.NET 10) with Interactive Server and WebAssembly components
 - **Hosting:** Azure App Service
-- **AI Integration:** Azure OpenAI via Microsoft Agents Framework
+- **AI Integration:** Microsoft Foundry via Microsoft Agent Framework (`ChatClientAgent` created with `AIProjectClient.AsAIAgent()`)
 
 ### Key Features
 - Submit support requests in plain text
@@ -181,7 +183,7 @@ The Web App serves as the user interface for the Incident Agent system.
 ├─────────────────────────────────────────────────────┤
 │  ┌─────────────────┐    ┌─────────────────────────┐ │
 │  │  Ticket Agent   │──▶│   Microsoft Foundry     │  │
-│  │  (LLM-powered)  │    │   (GPT-4.1 Model)       │ │
+│  │  (LLM-powered)  │    │  (gpt-5.6-terra Model)  │ │
 │  └─────────────────┘    └─────────────────────────┘ │
 │           │                                         │
 │           ▼                                         │
@@ -326,9 +328,10 @@ The `Messages/` folder contains example support requests:
 
 ### AgentFrameworkTest
 
-> Be advised that the AgentFrameworkTest project **uses deprecated APIs**
+AgentFrameworkTest is a console application used as a test project. It contains the following samples:
 
-AgentFrameworkTest is a console application used as a test project. 
+- **BasicAgentSample** - Creates a Microsoft Foundry agent using the Microsoft Agent Framework (`AIProjectClient.AsAIAgent()`) and runs a simple prompt
+- **OpenAIAPISample** - Calls the Foundry-hosted model directly through the OpenAI Responses API
 
 ### Limitations
 - This is a **sample project** for demonstration purposes

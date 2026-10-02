@@ -30,7 +30,7 @@ variable "ai_foundry_project_name" {
 
 variable "model_deployment_name" {
   type    = string
-  default = "gpt-5.4-mini"
+  default = "gpt-5.6-terra"
 }
 
 variable "cosmos_db_account_name" {
