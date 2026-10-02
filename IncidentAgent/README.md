@@ -22,7 +22,7 @@ The system showcases how multiple AI agents can work together in an event-driven
 
 ### Azure Resources
 - **Azure Subscription** with access to create resources
-- **Microsoft Foundry** with a deployed GPT-5.4-mini model
+- **Microsoft Foundry** with a deployed gpt-5.6-terra model
 - **Azure Cosmos DB** account with NoSQL API
 
 ### Development Tools
@@ -67,7 +67,7 @@ variable "ai_foundry_project_name" {
 
 variable "model_deployment_name" {
   type    = string
-  default = "gpt-5.4-mini"
+  default = "gpt-5.6-terra"
 }
 
 variable "cosmos_db_account_name" {

@@ -16,8 +16,6 @@ resource "azurerm_windows_function_app" "main_azure_function_app" {
     WEBSITE_RUN_FROM_PACKAGE               = "0"
     FUNCTIONS_WORKER_RUNTIME               = "dotnet-isolated"
     WEBSITE_USE_PLACEHOLDER_DOTNETISOLATED = "1"
-    APPINSIGHTS_INSTRUMENTATIONKEY         = azurerm_application_insights.main_application_insights.instrumentation_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING  = azurerm_application_insights.main_application_insights.connection_string
     AZURE_TENANT_ID                        = azurerm_user_assigned_identity.openai_identity.tenant_id
     AZURE_CLIENT_ID                        = azurerm_user_assigned_identity.openai_identity.client_id
     COSMOS_CONNECTION                      = data.azurerm_cosmosdb_account.ticket_db_account.primary_sql_connection_string
@@ -33,7 +31,7 @@ resource "azurerm_windows_function_app" "main_azure_function_app" {
   client_certificate_mode                  = "Required"
   ftp_publish_basic_authentication_enabled = false
   location                                 = var.location
-  name                                     = "mainfuncappcosmostriggerb74b"
+  name                                     = "mainfuncappcosmostrigger58c3"
   resource_group_name                      = data.azurerm_resource_group.main_resource_group.name
   service_plan_id                          = azurerm_service_plan.main_service_plan.id
   storage_account_access_key               = azurerm_storage_account.azure_function_storage_account.primary_access_key
@@ -46,6 +44,7 @@ resource "azurerm_windows_function_app" "main_azure_function_app" {
   webdeploy_publish_basic_authentication_enabled = false
 
   site_config {
+    application_insights_key               = azurerm_application_insights.main_application_insights.instrumentation_key
     application_insights_connection_string = azurerm_application_insights.main_application_insights.connection_string
     ftps_state                             = "FtpsOnly"
     use_32_bit_worker                      = false
@@ -118,13 +117,13 @@ resource "azurerm_monitor_smart_detector_alert_rule" "azure_function_smart_detec
 }
 
 resource "azurerm_storage_account" "azure_function_storage_account" {
-  account_kind                    = "Storage"
+  account_kind                    = "StorageV2"
   account_replication_type        = "LRS"
   account_tier                    = "Standard"
   allow_nested_items_to_be_public = false
   default_to_oauth_authentication = true
   location                        = var.location
-  name                            = "safunctionapp98a78ba6"
+  name                            = "safunctionapp6283bdea"
   resource_group_name             = data.azurerm_resource_group.main_resource_group.name
 }
 
