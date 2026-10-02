@@ -155,6 +155,8 @@ To deploy all Incident Agent Components to Azure, use the deployment powershell 
 ./Install-IncidentAgentApps.ps1
 ```
 
+> **⚠️ Warning:** This deployment approach is for the sample only and is not suitable for real projects. The script reads resource details directly from Terraform state, which can contain secrets. Real projects should use a deployment process that does not expose or parse Terraform state this way.
+
 The script will build, package and deploy all required applications leveraging information available in the terraform state.
 
 ## Web App Overview
