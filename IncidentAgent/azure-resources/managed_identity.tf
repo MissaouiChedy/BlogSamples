@@ -6,6 +6,6 @@ resource "azurerm_user_assigned_identity" "openai_identity" {
 
 resource "azurerm_role_assignment" "openai_identity_role_foundry" {
   scope                = data.azurerm_cognitive_account.main_ai_foundry.id
-  role_definition_name = "Azure AI User"
+  role_definition_name = "Foundry User"
   principal_id         = azurerm_user_assigned_identity.openai_identity.principal_id
 }
