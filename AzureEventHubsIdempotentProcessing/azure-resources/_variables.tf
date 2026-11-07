@@ -12,3 +12,8 @@ variable "location" {
   type    = string
   default = "swedencentral"
 }
+
+variable "partition_count" {
+  type    = number
+  default = 3
+}
