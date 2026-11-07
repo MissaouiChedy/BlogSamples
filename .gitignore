@@ -9,3 +9,4 @@
 .prompts
 .prompts/*
 .prompts/**/*
+.env*
