@@ -1,13 +1,12 @@
 ---
 name: setup-overview-diagram
-description: Generate a drawio diagram depicting the setup of a sample including azure infrastructure elements and high level flow
-agent: agent
+description: Generate a drawio diagram depicting the setup of a sample including azure infrastructure elements and high level flow. WHEN: "setup overview diagram", "generate drawio diagram", "diagram for sample README".
 argument-hint: "Provide the code sample Folder Path, list of entrypoint program paths to base the diagram on and any additional instructions"
 ---
 
 Consider the draw io example diagrams in `.github/examples/BlogSamples.Diagrams.Examples.xml`
 
-Generate a drawio xml diagram in a separate file depicting the setup of the ${input:sampleFolderPath} sample including azure infrastructure elements and the high level flow that is occurring in ${input:entrypointProgramPaths}.
+Generate a drawio xml diagram in a separate file depicting the setup of the sample folder the user gave including azure infrastructure elements and the high level flow that is occurring in the entrypoint program paths the user gave.
 
 Align the diagram with style of the `.github/examples/BlogSamples.Diagrams.Examples.xml` file.
 
@@ -24,5 +23,4 @@ Make sure diagram is properly laid out so that it is compact yet readable.
 
 Avoid including title, subtitle and legend in the diagram.
 
-Make sure to follow the following additional instructions:
-${input:additionalInstructions}
+Make sure to follow any additional instructions the user gave.

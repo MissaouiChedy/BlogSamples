@@ -1,5 +1,8 @@
 ---
-applyTo: "README.md"
+description: Use when writing or changing a sample README.md file.
+paths:
+  - "**/README.md"
+applyTo: "**/README.md"
 ---
 
 # Readme Instructions
