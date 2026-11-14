@@ -1,0 +1,136 @@
+<mxfile host="app.diagrams.net" pages="1">
+  <diagram name="IdempotencyTechnique1Overview" id="idem1-overview-page">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="idem1-app" parent="1" style="rounded=1;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=top;align=center;verticalAlign=bottom;" value="IdempotencyTechnique1 Console Application" vertex="1">
+          <mxGeometry height="220" width="500" x="440" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="idem1-sender" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="EventSender&lt;br&gt;(EventHubProducerClient)" vertex="1">
+          <mxGeometry height="60" width="160" x="480" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="idem1-consumer" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="EventConsumer&lt;br&gt;(EventProcessorClient)" vertex="1">
+          <mxGeometry height="60" width="160" x="480" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="idem1-email" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="FakeEmailSender" vertex="1">
+          <mxGeometry height="60" width="130" x="780" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="idem1-topic" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/analytics/Event_Hubs.svg;" value="technique1-topic" vertex="1">
+          <mxGeometry height="60" width="67" x="270" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="idem1-redis" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/databases/Cache_Redis.svg;" value="Processed Events Store&lt;br&gt;Azure Managed Redis" vertex="1">
+          <mxGeometry height="52" width="64" x="496" y="454" as="geometry" />
+        </mxCell>
+        <mxCell id="idem1-checkpoint" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Blob_Block.svg;" value="Checkpoint Store" vertex="1">
+          <mxGeometry height="52" width="65" x="812.5" y="564" as="geometry" />
+        </mxCell>
+        <mxCell id="idem1-user" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/identity/Users.svg;" value="User" vertex="1">
+          <mxGeometry height="70" width="64" x="161" y="445" as="geometry" />
+        </mxCell>
+        <mxCell id="idem1-e-send" edge="1" parent="1" source="idem1-sender" target="idem1-topic" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="303.5" y="210" />
+            </Array>
+            <mxPoint x="480" y="210" as="sourcePoint" />
+            <mxPoint x="303.5" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-e-send-lbl" connectable="0" parent="idem1-e-send" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Send Order (&#39;s&#39;)&lt;br&gt;Resend Order (&#39;r&#39;)" vertex="1">
+          <mxGeometry relative="1" x="-0.15" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-e-pull" edge="1" parent="1" source="idem1-consumer" target="idem1-topic" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="480" y="310" as="sourcePoint" />
+            <mxPoint x="337" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-e-pull-lbl" connectable="0" parent="idem1-e-pull" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="pull" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-e-redis" edge="1" parent="1" source="idem1-consumer" target="idem1-redis" style="endArrow=classic;html=1;rounded=0;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="528" y="340" as="sourcePoint" />
+            <mxPoint x="528" y="454" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-e-redis-lbl" connectable="0" parent="idem1-e-redis" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="1. Check MessageId&lt;br&gt;3. Record MessageId&lt;br&gt;(25h TTL)" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-e-email" edge="1" parent="1" source="idem1-consumer" target="idem1-email" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="640" y="310" as="sourcePoint" />
+            <mxPoint x="780" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-e-email-lbl" connectable="0" parent="idem1-e-email" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="2. Send Order&lt;br&gt;Confirmation Email" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-e-checkpoint" edge="1" parent="1" source="idem1-consumer" target="idem1-checkpoint" style="endArrow=classic;html=1;rounded=0;exitX=0.85;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="616" y="400" />
+              <mxPoint x="845" y="400" />
+            </Array>
+            <mxPoint x="616" y="340" as="sourcePoint" />
+            <mxPoint x="845" y="564" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-e-checkpoint-lbl" connectable="0" parent="idem1-e-checkpoint" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="4. Checkpoint every&lt;br&gt;2 events per partition" vertex="1">
+          <mxGeometry relative="1" x="0.6" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-r-evh" edge="1" parent="1" source="idem1-user" target="idem1-topic" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;dashPattern=8 8;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="193" y="310" />
+            </Array>
+            <mxPoint x="193" y="445" as="sourcePoint" />
+            <mxPoint x="270" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-r-evh-lbl" connectable="0" parent="idem1-r-evh" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Azure Event Hubs Data Sender&lt;br&gt;Azure Event Hubs Data Receiver&lt;br&gt;Role Assignments" vertex="1">
+          <mxGeometry relative="1" x="-0.48" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-r-redis" edge="1" parent="1" source="idem1-user" target="idem1-redis" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;dashPattern=8 8;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="225" y="480" as="sourcePoint" />
+            <mxPoint x="496" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-r-redis-lbl" connectable="0" parent="idem1-r-redis" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Redis Access Policy&lt;br&gt;Assignment" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-r-storage" edge="1" parent="1" source="idem1-user" target="idem1-checkpoint" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.85;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;dashPattern=8 8;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="265" y="504.5" />
+              <mxPoint x="265" y="590" />
+            </Array>
+            <mxPoint x="225" y="504.5" as="sourcePoint" />
+            <mxPoint x="812.5" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="idem1-r-storage-lbl" connectable="0" parent="idem1-r-storage" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Storage Blob Data Owner&lt;br&gt;Role Assignment" vertex="1">
+          <mxGeometry relative="1" x="0.3" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
