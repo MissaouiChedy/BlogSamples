@@ -20,7 +20,7 @@ resource "azurerm_storage_account" "checkpoint_storage_account" {
 }
 
 resource "azurerm_storage_container" "checkpoint_container" {
-  name               = "checkpoint"
+  name               = "technique1-checkpoint"
   storage_account_id = azurerm_storage_account.checkpoint_storage_account.id
 }
 

@@ -13,7 +13,7 @@ resource "azurerm_eventhub_namespace" "main_eventhub_namespace" {
 }
 
 resource "azurerm_eventhub" "main_eventhub_topic" {
-  name              = "main-topic"
+  name              = "technique1-topic"
   namespace_id      = azurerm_eventhub_namespace.main_eventhub_namespace.id
   partition_count   = var.partition_count
   message_retention = 1
@@ -21,7 +21,7 @@ resource "azurerm_eventhub" "main_eventhub_topic" {
 }
 
 resource "azurerm_eventhub_consumer_group" "main_eventhub_consumer_group" {
-  name                = "main-consumer"
+  name                = "technique1-consumer"
   namespace_name      = azurerm_eventhub_namespace.main_eventhub_namespace.name
   eventhub_name       = azurerm_eventhub.main_eventhub_topic.name
   resource_group_name = azurerm_resource_group.main_resource_group.name
