@@ -1,2 +1,6 @@
 <Solution>
+  <Project Path="IdempotencyTechnique1/IdempotencyTechnique1.csproj" Id="a8b496e6-fed0-413a-8a1d-a5ab81934fc0" />
+  <Project Path="IdempotencyTechnique2/IdempotencyTechnique2.csproj" />
+  <Project Path="IdempotencyTechnique3/IdempotencyTechnique3.csproj" />
+  <Project Path="IdempotencyTechnique4/IdempotencyTechnique4.csproj" />
 </Solution>
