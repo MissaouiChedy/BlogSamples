@@ -45,9 +45,9 @@ For each received order, the `EventConsumer` interacts with the following elemen
 - **Checkpoint Store:** the `technique1-checkpoint` blob container of the `stevhidemcheckpoint67fd` storage account, updated every 2 events per partition
 
 The main user's principal is granted the following accesses to allow running the sample without secrets, by using Entra ID Authentication:
-- Azure Event Hubs Data Sender on the Event Hubs namespace
-- Azure Event Hubs Data Receiver on the Event Hubs namespace
-- Storage Blob Data Owner on the checkpoint storage account
+- [`Azure Event Hubs Data Sender`](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/analytics#azure-event-hubs-data-sender) on the Event Hubs namespace
+- [`Azure Event Hubs Data Receiver`](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/analytics#azure-event-hubs-data-receiver) on the Event Hubs namespace
+- [`Storage Blob Data Owner`](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-blob-data-owner) on the checkpoint storage account
 - `default` Redis access policy assignment on the Azure Managed Redis database (access keys are disabled)
 
 ### Technique 2: Rely on Natural State
@@ -191,6 +191,14 @@ The console app should display an output similar to the following:
 <<SCREENSHOT: Console output of a sample run of the IdempotencyTechnique4 console app>>
 
 ## Notes
+
+### Globally Unique Resource Names
+Some of the Azure resource names of the sample must be unique across all of Azure, since they are part of public DNS endpoints. If one of them is already taken, rename it in the terraform project and update the matching constant in the console app's `Program.cs`:
+- `evh-test-main-eventhub-ns-67fd`: the Event Hubs namespace
+- `amr-evh-idem-67fd`: the Azure Managed Redis instance
+- `stevhidemcheckpoint67fd`: the checkpoint storage account
+
+The other resources, such as the resource group, the Event Hubs and the blob containers, only need to be unique within their parent scope and can be renamed freely.
 
 ### Azure Resources Cleanup
 After finishing using the sample, remember **to remove the azure resources** to avoid incurring unnecessary costs on your Azure Subscription.
