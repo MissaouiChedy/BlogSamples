@@ -28,7 +28,8 @@ namespace IdempotencyTechnique2
             catch (RequestFailedException ex) when (ex.Status == 409 && ex.ErrorCode == TableErrorCode.EntityAlreadyExists)
             {
                 /*
-                 * The rejected insert is still a billed storage transaction
+                 * A rejected insert is a failed request that Azure Storage still bills as a transaction (ClientOtherError)
+                 * https://learn.microsoft.com/en-us/rest/api/storageservices/storage-analytics-logged-operations-and-status-messages
                  */
                 return false;
             }
