@@ -12,7 +12,7 @@ Each console app of the sample demonstrates one technique for making the process
 |---|-----------|---------|--------|
 | 1 | Remember What You Processed | `IdempotencyTechnique1` | Available |
 | 2 | Rely on Natural State | `IdempotencyTechnique2` | Available |
-| 3 | Remember Where You Are At | `IdempotencyTechnique3` | Placeholder, not implemented yet |
+| 3 | Remember Where You Are At | `IdempotencyTechnique3` | Available |
 | 4 | Leverage Declarative Events | `IdempotencyTechnique4` | Placeholder, not implemented yet |
 
 This example is discussed in the [Idempotent Event Processing With Azure Event Hubs](http://blog.techdominator.com/article/idempotent-event-processing-with-azure-event-hubs.html) blog post.
@@ -61,18 +61,30 @@ The `IdempotencyTechnique2` console application runs a sender and a consumer con
 - `EventConsumer` uses an `EventProcessorClient` to pull events through the `technique2-consumer` consumer group
 
 For each received order, the `EventConsumer` interacts with the following elements:
-- **Orders Table:** the `orders` table of the `stevhidemorders67fd` storage account, which holds the natural state of the consumer. Each order is stored as an entity keyed by its `OrderId`, and the table rejects a second insert of the same order
+- **Orders Table:** the `orders` table of the `stevhidemstate67fd` storage account, which holds the natural state of the consumer. Each order is stored as an entity keyed by its `OrderId`, and the table rejects a second insert of the same order
 - **Checkpoint Store:** the `technique2-checkpoint` blob container of the `stevhidemcheckpoint67fd` storage account, updated every 2 events per partition
 
 There is no dedicated deduplication store: the orders table is both the state the consumer produces and the record of what it already processed.
 
-In addition to the Technique 1 accesses, the main user's principal is granted [`Storage Table Data Contributor`](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-table-data-contributor) on the orders storage account.
+In addition to the Technique 1 accesses, the main user's principal is granted [`Storage Table Data Contributor`](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-table-data-contributor) on the natural state storage account.
 
 ### Technique 3: Remember Where You Are At
 
-<<DIAGRAM: Setup overview of the IdempotencyTechnique3 console application and the Azure resources it interacts with>>
+The following diagram shows the setup of the third technique:
 
-<!-- TODO: Text description of the Technique 3 setup. -->
+![Sample Overview Idempotency Technique 3](doc-images/BlogSamples-IdemPotentTechnique3Overview.drawio.png)
+
+The `IdempotencyTechnique3` console application runs a sender and a consumer concurrently, both connected to the `technique3-topic` Event Hub (3 partitions, 1 day retention) of the same `evh-test-main-eventhub-ns-67fd` namespace:
+- `EventSender` uses an `EventHubProducerClient` to send, resend and send out of order stock adjustments on key presses
+- `EventConsumer` uses an `EventProcessorClient` to pull events through the `technique3-consumer` consumer group
+
+For each received stock adjustment, the `EventConsumer` interacts with the following elements:
+- **Inventory Table:** the `inventory` table of the `stevhidemstate67fd` storage account, which holds the stock of each product keyed by its `Sku`. Each product also stores the `LastAppliedLsn`, the position of the last adjustment applied to it
+- **Checkpoint Store:** the `technique3-checkpoint` blob container of the `stevhidemcheckpoint67fd` storage account, updated every 2 events per partition
+
+There is no dedicated deduplication store: each product remembers where the consumer is at, in the same entity as its stock.
+
+The main user's principal uses the same accesses as Technique 2, the inventory table lives in the natural state storage account on which [`Storage Table Data Contributor`](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-table-data-contributor) is granted.
 
 ### Technique 4: Leverage Declarative Events
 
@@ -157,7 +169,41 @@ const int checkpointThreshold = 2;
 
 ### IdempotencyTechnique3
 
-<!-- TODO: Overview of the Technique 3 console app. -->
+The console app deduplicates events by remembering, for each product, the position of the last change applied to it. It uses the following NuGet packages:
+- [`Azure.Messaging.EventHubs`](https://www.nuget.org/packages/Azure.Messaging.EventHubs/) to send events
+- [`Azure.Messaging.EventHubs.Processor`](https://www.nuget.org/packages/Azure.Messaging.EventHubs.Processor/) and [`Azure.Storage.Blobs`](https://www.nuget.org/packages/Azure.Storage.Blobs/) to consume events and checkpoint in blob storage
+- [`Azure.Data.Tables`](https://www.nuget.org/packages/Azure.Data.Tables/) to store the product stocks in Azure Table storage
+- [`Azure.Identity`](https://www.nuget.org/packages/Azure.Identity/) to authenticate with `DefaultAzureCredential`
+
+The events are `StockAdjustedEvent` records emitted by an inventory system. Each one carries a relative `Delta` (a restock adds units, a sale removes units), so applying it twice corrupts the stock. Each one also carries an `Lsn`, a monotonic ordering value supplied by the producer. It stands in for the [SQL Server CDC log sequence number](https://learn.microsoft.com/en-us/sql/relational-databases/system-tables/cdc-capture-instance-ct-transact-sql) (`__$start_lsn`) of the change, and is simulated with clock ticks so that it keeps increasing across runs.
+
+On the sending side, the `EventSender`:
+- Sends a random stock adjustment of a random product when `s` is pressed, with a new `Lsn`
+- Resends an already sent adjustment when `r` is pressed, with the same body and `Lsn`, simulating a producer retry after a lost acknowledgment. Event Hubs stores it as a new event with its own sequence number
+- Sends two adjustments of the same product out of order when `o` is pressed, the newer one first, simulating a change that reaches the event hub after a newer one
+- Uses the `Sku` as partition key, so the adjustments of a product land in the same partition and are received in the order they were sent
+
+On the receiving side, the `EventConsumer` performs the following for each received event, through the `ProductStockRepository`:
+
+1. Read the product entity, keyed by its `Sku`, from the inventory table
+1. If the `Lsn` of the adjustment is lower or equal to the stored `LastAppliedLsn`, the adjustment is already applied and the event is skipped
+1. Otherwise apply the `Delta` and store the new `LastAppliedLsn` in the same entity, with a write conditional on the `ETag` read in step 1 (or an insert for a new product)
+1. Checkpoint the partition when `checkpointThreshold` events were handled since its last checkpoint
+
+The stock and the `Lsn` are written in the same operation, so there is no failure window between applying an adjustment and recording it. The conditional write makes the check and the write behave as one atomic step: if another writer updated the product in between, the write fails with `412 Precondition Failed` (or `409 Conflict` for a new product), and the repository reads the product again and re-evaluates the `Lsn`.
+
+When `q` is pressed, the console app stops gracefully **without a final checkpoint.** Events handled since the last checkpoint of their partition are replayed on the next run and their `Lsn` is found already applied, which demonstrates duplicates while receiving.
+
+The checkpoint frequency can be tweaked in `Program.cs`:
+
+```csharp
+/*
+ * Checkpoint every n events per partition
+ */
+const int checkpointThreshold = 2;
+```
+
+> Note that this technique relies on the producer publishing the changes of an entity in order. An adjustment that reaches the event hub after a newer one of the same product is skipped as already applied, and its delta is lost. The `o` key demonstrates this case.
 
 ### IdempotencyTechnique4
 
@@ -241,9 +287,31 @@ The console app should display an output similar to the following:
 
 ### 5. Run Technique 3
 
-<!-- TODO: Steps to run the IdempotencyTechnique3 console app. -->
+Run the `IdempotencyTechnique3` console app by setting it as startup project and pressing F5 in Visual Studio, or with:
 
-<<SCREENSHOT: Console output of a sample run of the IdempotencyTechnique3 console app>>
+```bash
+dotnet run --project IdempotencyTechnique3
+```
+
+Once the app is ready:
+1. Press `s` a few times to send stock adjustments
+1. Press `r` to resend an already sent adjustment
+1. Press `o` to send two adjustments of the same product out of order
+1. Press `q` to quit
+1. Run the app again to observe the replay of the events that were not checkpointed
+
+The console app should display an output similar to the following:
+
+![Console App Output IdempotencyTechnique3](doc-images/IdempotencyTechnique3.Run.png)
+
+1. **App ready:** the processor started and the console waits for key presses (`s` send, `r` resend, `o` out of order, `q` quit)
+2. **Sending adjustments:** each `s` sends a new adjustment of a random product with a fresh `Lsn`
+3. **Re-sending an adjustment:** `r` sends an already sent adjustment again with the same body and `Lsn`
+4. **Sending out of order:** `o` sends a newer adjustment of a product, then an older one of the same product
+5. **Adjustments applied:** the `Lsn` is greater than the `LastAppliedLsn` of the product, so the delta is applied and the new `Lsn` is stored with the stock
+6. **Adjustments already applied:** the `Lsn` is equal to the `LastAppliedLsn` of the product, so the event is skipped and the stock is unchanged. The top one is a replay of an event from an earlier run that was not checkpointed, the bottom one is the re-sent adjustment from step 3
+7. **Older adjustment skipped:** the older adjustment from step 4 arrives after the newer one, its `Lsn` is lower than the `LastAppliedLsn`, so it is skipped and its delta is lost
+8. **Exiting:** `q` stops the processor gracefully and the process exits with code 0 (this line is printed by the run wrapper, not by the app)
 
 ### 6. Run Technique 4
 
@@ -258,7 +326,7 @@ Some of the Azure resource names of the sample must be unique across all of Azur
 - `evh-test-main-eventhub-ns-67fd`: the Event Hubs namespace
 - `amr-evh-idem-67fd`: the Azure Managed Redis instance
 - `stevhidemcheckpoint67fd`: the checkpoint storage account
-- `stevhidemorders67fd`: the orders storage account of Technique 2
+- `stevhidemstate67fd`: the natural state storage account of Techniques 2 and 3
 
 The other resources, such as the resource group, the Event Hubs and the blob containers, only need to be unique within their parent scope and can be renamed freely.
 
@@ -268,6 +336,8 @@ The console apps keep the consumer logic short to focus on the idempotency techn
 - **Checkpoint counters:** the per partition counters are kept in memory and are not reset when a partition is handed over to another consumer, so the checkpoint cadence drifts after an ownership change. Handling `PartitionClosingAsync` would reset them.
 - **Technique 2 failure window:** the orders table closes the failure window only because inserting the order is the single side effect. Adding another side effect after the insert, such as sending an email, brings back the failure window of Technique 1.
 - **Technique 2 concurrent duplicates:** the orders table also rejects an order inserted concurrently by two consumers, which can happen when partition ownership changes, but the sample runs a single consumer and doesn't demonstrate it. Since the order id is the partition key, an order and its resent duplicate always land in the same partition and are handled sequentially.
+- **Technique 3 ordering:** the `Lsn` is only meaningful if the producer publishes the changes of a product in order and the consumer receives them in order. The `Sku` partition key guarantees the second part, the first part is the producer's responsibility.
+- **Technique 3 concurrent writes:** the `ETag` conditional write and its retry only matter when two consumers write the same product concurrently, during a partition ownership change. The sample runs a single consumer and doesn't demonstrate it.
 
 ### Azure Resources Cleanup
 After finishing using the sample, remember **to remove the azure resources** to avoid incurring unnecessary costs on your Azure Subscription.

@@ -9,7 +9,7 @@ const string eventHubNamespace = "evh-test-main-eventhub-ns-67fd.servicebus.wind
 const string eventHub = "technique2-topic";
 const string consumerGroup = "technique2-consumer";
 const string checkpointContainerUri = "https://stevhidemcheckpoint67fd.blob.core.windows.net/technique2-checkpoint";
-const string ordersTableEndpoint = "https://stevhidemorders67fd.table.core.windows.net";
+const string ordersTableEndpoint = "https://stevhidemstate67fd.table.core.windows.net";
 const string ordersTable = "orders";
 
 /*

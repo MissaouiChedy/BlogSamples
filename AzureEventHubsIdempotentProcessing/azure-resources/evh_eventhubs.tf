@@ -53,3 +53,18 @@ resource "azurerm_eventhub_consumer_group" "technique2_eventhub_consumer_group" 
   eventhub_name       = azurerm_eventhub.technique2_eventhub_topic.name
   resource_group_name = azurerm_resource_group.main_resource_group.name
 }
+
+resource "azurerm_eventhub" "technique3_eventhub_topic" {
+  name              = "technique3-topic"
+  namespace_id      = azurerm_eventhub_namespace.main_eventhub_namespace.id
+  partition_count   = var.partition_count
+  message_retention = 1
+  status            = "Active"
+}
+
+resource "azurerm_eventhub_consumer_group" "technique3_eventhub_consumer_group" {
+  name                = "technique3-consumer"
+  namespace_name      = azurerm_eventhub_namespace.main_eventhub_namespace.name
+  eventhub_name       = azurerm_eventhub.technique3_eventhub_topic.name
+  resource_group_name = azurerm_resource_group.main_resource_group.name
+}
