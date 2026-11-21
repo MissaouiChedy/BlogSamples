@@ -29,3 +29,8 @@ resource "azurerm_role_assignment" "stg_role_assignment_blob_data_owner" {
   role_definition_name = "Storage Blob Data Owner"
   principal_id         = var.user_principal_id
 }
+
+resource "azurerm_storage_container" "technique2_checkpoint_container" {
+  name               = "technique2-checkpoint"
+  storage_account_id = azurerm_storage_account.checkpoint_storage_account.id
+}

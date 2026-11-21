@@ -11,7 +11,7 @@ Each console app of the sample demonstrates one technique for making the process
 | # | Technique | Project | Status |
 |---|-----------|---------|--------|
 | 1 | Remember What You Processed | `IdempotencyTechnique1` | Available |
-| 2 | Rely on Natural State | `IdempotencyTechnique2` | Placeholder, not implemented yet |
+| 2 | Rely on Natural State | `IdempotencyTechnique2` | Available |
 | 3 | Remember Where You Are At | `IdempotencyTechnique3` | Placeholder, not implemented yet |
 | 4 | Leverage Declarative Events | `IdempotencyTechnique4` | Placeholder, not implemented yet |
 
@@ -52,9 +52,21 @@ The main user's principal is granted the following accesses to allow running the
 
 ### Technique 2: Rely on Natural State
 
-<<DIAGRAM: Setup overview of the IdempotencyTechnique2 console application and the Azure resources it interacts with>>
+The following diagram shows the setup of the second technique:
 
-<!-- TODO: Text description of the Technique 2 setup. -->
+![Sample Overview Idempotency Technique 2](doc-images/BlogSamples-IdemPotentTechnique2Overview.drawio.png)
+
+The `IdempotencyTechnique2` console application runs a sender and a consumer concurrently, both connected to the `technique2-topic` Event Hub (3 partitions, 1 day retention) of the same `evh-test-main-eventhub-ns-67fd` namespace:
+- `EventSender` uses an `EventHubProducerClient` to send and resend orders on key presses
+- `EventConsumer` uses an `EventProcessorClient` to pull events through the `technique2-consumer` consumer group
+
+For each received order, the `EventConsumer` interacts with the following elements:
+- **Orders Table:** the `orders` table of the `stevhidemorders67fd` storage account, which holds the natural state of the consumer. Each order is stored as an entity keyed by its `OrderId`, and the table rejects a second insert of the same order
+- **Checkpoint Store:** the `technique2-checkpoint` blob container of the `stevhidemcheckpoint67fd` storage account, updated every 2 events per partition
+
+There is no dedicated deduplication store: the orders table is both the state the consumer produces and the record of what it already processed.
+
+In addition to the Technique 1 accesses, the main user's principal is granted [`Storage Table Data Contributor`](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-table-data-contributor) on the orders storage account.
 
 ### Technique 3: Remember Where You Are At
 
@@ -111,7 +123,37 @@ const int checkpointThreshold = 2;
 
 ### IdempotencyTechnique2
 
-<!-- TODO: Overview of the Technique 2 console app. -->
+The console app deduplicates events by relying on the natural state of the consumer: the orders it stores. It uses the following NuGet packages:
+- [`Azure.Messaging.EventHubs`](https://www.nuget.org/packages/Azure.Messaging.EventHubs/) to send events
+- [`Azure.Messaging.EventHubs.Processor`](https://www.nuget.org/packages/Azure.Messaging.EventHubs.Processor/) and [`Azure.Storage.Blobs`](https://www.nuget.org/packages/Azure.Storage.Blobs/) to consume events and checkpoint in blob storage
+- [`Azure.Data.Tables`](https://www.nuget.org/packages/Azure.Data.Tables/) to store orders in Azure Table storage
+- [`Azure.Identity`](https://www.nuget.org/packages/Azure.Identity/) to authenticate with `DefaultAzureCredential`
+
+On the sending side, the `EventSender`:
+- Sends a random `OrderPlaced` event when `s` is pressed. No `MessageId` is assigned: the `OrderId` in the event body is the deduplication key, so the consumer doesn't rely on any event metadata
+- Resends an already sent order when `r` is pressed, with the same body, simulating a producer retry after a lost acknowledgment. Event Hubs stores it as a new event with its own sequence number, carrying the same `OrderId`
+- Uses the order id as partition key, so a resent order lands in the same partition as the original
+
+On the receiving side, the `EventConsumer` performs the following for each received event:
+
+1. Insert the order in the orders table through the `OrderRepository`, as an entity with the `OrderId` as `PartitionKey` and a constant `RowKey`
+1. If the table rejects the insert with `409 Conflict` (`EntityAlreadyExists`), the order is already stored and the event is skipped
+1. Checkpoint the partition when `checkpointThreshold` events were handled since its last checkpoint
+
+There is no check before the write: the insert is the check, and it is atomic. Since the deduplication key is written in the same operation as the state change, there is no failure window between processing an event and recording it, unlike Technique 1.
+
+When `q` is pressed, the console app stops gracefully **without a final checkpoint.** Events handled since the last checkpoint of their partition are replayed on the next run and rejected by the orders table, which demonstrates duplicates while receiving.
+
+The checkpoint frequency can be tweaked in `Program.cs`:
+
+```csharp
+/*
+ * Checkpoint every n events per partition
+ */
+const int checkpointThreshold = 2;
+```
+
+> Note that Table storage has no decimal type, the order total is stored as a `double` for brevity. A production consumer should store amounts in minor units (cents) as an `Int64`, or as a string.
 
 ### IdempotencyTechnique3
 
@@ -174,9 +216,28 @@ The console app should display an output similar to the following:
 
 ### 4. Run Technique 2
 
-<!-- TODO: Steps to run the IdempotencyTechnique2 console app. -->
+Run the `IdempotencyTechnique2` console app by setting it as startup project and pressing F5 in Visual Studio, or with:
 
-<<SCREENSHOT: Console output of a sample run of the IdempotencyTechnique2 console app>>
+```bash
+dotnet run --project IdempotencyTechnique2
+```
+
+Once the app is ready:
+1. Press `s` a few times to send orders
+1. Press `r` to resend an already sent order
+1. Press `q` to quit
+1. Run the app again to observe the replay of the events that were not checkpointed
+
+The console app should display an output similar to the following:
+
+![Console App Output IdempotencyTechnique2](doc-images/IdempotencyTechnique2.Run.png)
+
+1. **App ready:** the processor started and the console waits for key presses (`s` send, `r` resend, `q` quit)
+2. **Sending messages:** each `s` sends a new order with a fresh `OrderId`
+3. **Re-sending a message:** `r` sends an already sent order again with the same body and `OrderId`
+4. **Orders stored:** the first insert of an `OrderId` succeeds and the order is stored in the orders table
+5. **Orders already stored:** the orders table rejects the insert, so the event is skipped. The top one is a replay of an event from an earlier run that was not checkpointed, the bottom one is the re-sent order from step 3
+6. **Exiting:** `q` stops the processor gracefully and the process exits with code 0 (this line is printed by the run wrapper, not by the app)
 
 ### 5. Run Technique 3
 
@@ -197,8 +258,16 @@ Some of the Azure resource names of the sample must be unique across all of Azur
 - `evh-test-main-eventhub-ns-67fd`: the Event Hubs namespace
 - `amr-evh-idem-67fd`: the Azure Managed Redis instance
 - `stevhidemcheckpoint67fd`: the checkpoint storage account
+- `stevhidemorders67fd`: the orders storage account of Technique 2
 
 The other resources, such as the resource group, the Event Hubs and the blob containers, only need to be unique within their parent scope and can be renamed freely.
+
+### Caveats
+The console apps keep the consumer logic short to focus on the idempotency techniques, and take shortcuts a production consumer shouldn't:
+- **Error handler:** `ProcessErrorHandler` logs every error as unexpected. The processor reports its own errors there, such as a lost partition ownership or a transient service failure, which are expected occasionally, especially when several consumer instances run. Exceptions thrown by the event handler don't reach it.
+- **Checkpoint counters:** the per partition counters are kept in memory and are not reset when a partition is handed over to another consumer, so the checkpoint cadence drifts after an ownership change. Handling `PartitionClosingAsync` would reset them.
+- **Technique 2 failure window:** the orders table closes the failure window only because inserting the order is the single side effect. Adding another side effect after the insert, such as sending an email, brings back the failure window of Technique 1.
+- **Technique 2 concurrent duplicates:** the orders table also rejects an order inserted concurrently by two consumers, which can happen when partition ownership changes, but the sample runs a single consumer and doesn't demonstrate it. Since the order id is the partition key, an order and its resent duplicate always land in the same partition and are handled sequentially.
 
 ### Azure Resources Cleanup
 After finishing using the sample, remember **to remove the azure resources** to avoid incurring unnecessary costs on your Azure Subscription.
